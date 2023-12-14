@@ -150,6 +150,14 @@ local function preprocess_node(nodedef)
 	if nodedef.liquidtype == "flowing" then
 		nodedef.paramtype2 = "flowingliquid"
 	end
+
+	if itemdef.type == "node" and (itemdef.drawtype == "sunken" or itemdef.drawtype == "covered") then
+		if not core.registered_nodes[itemdef.inner_node] then
+			error("Unable to register item " .. name .. ": Inner node not registered: " .. itemdef.inner_node)
+		end
+	else
+		itemdef.inner_node = nil
+	end
 end
 
 local function preprocess_craft(itemdef)
