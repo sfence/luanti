@@ -1611,7 +1611,7 @@ There are a bunch of different looking node types.
 * `covered`
     * Can be used to draw covered nodes like historical vases, sculptures, etc covered by sand.
     * It first renders the node defined in metadata fields `inner_node` and `inner_param2`
-      and after it normal/leveled node around it.
+      and after it leveled nodebox node around it.
     * By changing the level of the node, the covered node can be fully or partially covered/uncovered.
 
 `*_optional` drawtypes need less rendering time if deactivated
