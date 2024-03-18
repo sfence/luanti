@@ -359,9 +359,10 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	NameIdMapping nimap;
 	Buffer<u8> buf;
 	const u8 content_width = 2;
-	const u8 params_width = 2;
+	u8 params_width = 2;
  	if(disk)
 	{
+		// TODO: Configurable posibility to save light params on disk?
 		MapNode *tmp_nodes = new MapNode[nodecount];
 		memcpy(tmp_nodes, data, nodecount * sizeof(MapNode));
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
@@ -379,6 +380,8 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	}
 	else
 	{
+		// TODO: Version check
+		params_width = 6;
 		buf = MapNode::serializeBulk(version, data, nodecount,
 				content_width, params_width);
 	}
@@ -493,7 +496,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	u8 params_width = readU8(is);
 	if(content_width != 1 && content_width != 2)
 		throw SerializationError("MapBlock::deSerialize(): invalid content_width");
-	if(params_width != 2)
+	if(params_width != 2 && params_width != 6)
 		throw SerializationError("MapBlock::deSerialize(): invalid params_width");
 
 	/*

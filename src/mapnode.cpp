@@ -698,7 +698,7 @@ Buffer<u8> MapNode::serializeBulk(int version,
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
 	sanity_check(content_width == 2);
-	sanity_check(params_width == 2);
+	sanity_check((params_width == 2) || (params_width == 6));
 
 	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
 	// in memory; conversion just won't work in this direction.
@@ -710,12 +710,21 @@ Buffer<u8> MapNode::serializeBulk(int version,
 
 	u32 start1 = content_width * nodecount;
 	u32 start2 = (content_width + 1) * nodecount;
+	u32 start3 = (content_width + 2) * nodecount;
 
 	// Serialize content
 	for (u32 i = 0; i < nodecount; i++) {
 		writeU16(&databuf[i * 2], nodes[i].param0);
+		// TODO: Calculate param1 from light params for old clients
 		writeU8(&databuf[start1 + i], nodes[i].param1);
 		writeU8(&databuf[start2 + i], nodes[i].param2);
+		// Serialize light params
+		if (params_width == 6) {
+			writeU8(&databuf[start3 + i*4 + 0], nodes[i].sun_max);
+			writeU8(&databuf[start3 + i*4 + 1], nodes[i].light_r);
+			writeU8(&databuf[start3 + i*4 + 2], nodes[i].light_g);
+			writeU8(&databuf[start3 + i*4 + 3], nodes[i].light_b);
+		}
 	}
 	return databuf;
 }
@@ -730,7 +739,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	if (version < 22
 			|| (content_width != 1 && content_width != 2)
-			|| params_width != 2)
+			|| (params_width != 2 && params_width != 6))
 		FATAL_ERROR("Deserialize bulk node data error");
 
 	// read data
@@ -772,6 +781,23 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	{
 		for(u32 i=0; i<nodecount; i++)
 			nodes[i].param2 = readU8(&databuf[start2 + i]);
+	}
+
+	// Deserialize lights params
+	if (params_width == 6) {
+		u32 start3 = (content_width + 2) * nodecount;
+		for(u32 i=0; i<nodecount; i++) {
+			nodes[i].sun_max = readU8(&databuf[start3 + i*4 + 0]);
+			nodes[i].light_r = readU8(&databuf[start3 + i*4 + 1]);
+			nodes[i].light_g = readU8(&databuf[start3 + i*4 + 2]);
+			nodes[i].light_b = readU8(&databuf[start3 + i*4 + 3]);
+		}
+	}
+	else {
+		for(u32 i=0; i<nodecount; i++) {
+			nodes[i].sun_max = nodes[i].param1 & 0x0F;
+			nodes[i].light_r = nodes[i].param1 & 0xF0;
+		}
 	}
 }
 

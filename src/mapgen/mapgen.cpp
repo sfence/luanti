@@ -437,8 +437,11 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
 			u32 i = vm->m_area.index(a.MinEdge.X, y, z);
-			for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++, i++)
+			for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++, i++) {
 				vm->m_data[i].param1 = light;
+				vm->m_data[i].sun_max = light & 0x0F;
+				vm->m_data[i].light_r = light & 0xF0;
+			}
 		}
 	}
 }
@@ -474,6 +477,8 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 	light = MYMAX(light_day, n.param1 & 0x0F) |
 			MYMAX(light_night, n.param1 & 0xF0);
 
+	n.sun_max = MYMAX(light_day, n.sun_max);
+	n.light_r = MYMAX(light_night, n.light_r);
 	n.param1 = light;
 
 	// add to queue
@@ -519,6 +524,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 				if (!ndef->getLightingFlags(n).sunlight_propagates)
 					break;
 				n.param1 = LIGHT_SUN;
+				n.sun_max = LIGHT_SUN;
 				VoxelArea::add_y(em, i, -1);
 			}
 		}

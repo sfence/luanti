@@ -158,6 +158,16 @@ struct alignas(u32) MapNode
 	*/
 	u8 param2;
 
+	/*
+		Max sun light intensity.
+	*/
+	u8 sun_max;
+
+	/*
+		Color light parameters.
+	*/
+	u8 light_r, light_g, light_b;
+
 	MapNode() = default;
 
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0) noexcept
@@ -168,6 +178,7 @@ struct alignas(u32) MapNode
 
 	bool operator==(const MapNode &other) const noexcept
 	{
+		// TODO: Should be light check added?
 		return (param0 == other.param0
 				&& param1 == other.param1
 				&& param2 == other.param2);
@@ -215,10 +226,14 @@ struct alignas(u32) MapNode
 		if (bank == LIGHTBANK_DAY) {
 			param1 &= 0xf0;
 			param1 |= a_light & 0x0f;
+			sun_max = a_light;
 		} else {
 			assert(bank == LIGHTBANK_NIGHT);
 			param1 &= 0x0f;
 			param1 |= (a_light & 0x0f)<<4;
+			light_r = a_light;
+			light_g = a_light;
+			light_b = a_light;
 		}
 	}
 
@@ -229,6 +244,7 @@ struct alignas(u32) MapNode
 	 */
 	inline bool isLightDayNightEq(ContentLightingFlags f) const noexcept
 	{
+		// TODO: Have to be updated for color light
 		return !f.has_light || getLight(LIGHTBANK_DAY, f) == getLight(LIGHTBANK_NIGHT, f);
 	}
 
@@ -245,8 +261,10 @@ struct alignas(u32) MapNode
 	 */
 	inline u8 getLightRaw(LightBank bank, ContentLightingFlags f) const noexcept
 	{
+		// TODO: Update to reflect color light
 		if(f.has_light)
-			return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+			//return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+			return bank == LIGHTBANK_DAY ? sun_max & 0x0f : light_r & 0x0f;
 		return 0;
 	}
 
