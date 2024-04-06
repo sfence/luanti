@@ -119,17 +119,16 @@ struct ServerPlayingSound
 
 	SoundSpec spec;
 
-	// server processing values
-
-	// relative server time when sound has been added
-	// used for update spec.start_time when sending sound to new client
+	// Relative server time when sound has been added;
+	// used to update `spec.start_time` when sending a sound
+	// to a client coming into range to keep sounds roughly synced
 	float start_time;
-	// hold time limit for sound sending to new clients
+	// Time limit for sending sound to clients coming into range
 	float keep_time;
-	bool can_be_send_later = false;
+	bool can_be_sent_later = false;
 
-	std::unordered_set<session_t> done_clients; // peer ids
-	std::unordered_set<session_t> clients; // peer ids
+	std::unordered_set<session_t> done_clients; // playback done
+	std::unordered_set<session_t> clients; // active listeners
 };
 
 struct MinimapMode {
@@ -252,7 +251,8 @@ public:
 	// Stop all sounds attached to given objects, for a certain client
 	void stopAttachedSounds(session_t peer_id,
 		const std::vector<u16> &object_ids);
-	void createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params, const v3f &pos, bool ephemeral = false);
+	void writeSoundPacket(NetworkPacket &pkt, s32 handle,
+		const ServerPlayingSound &params, const v3f &pos, bool ephemeral = false);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);

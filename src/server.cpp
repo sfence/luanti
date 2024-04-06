@@ -934,17 +934,17 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
 			ServerPlayingSound &sound = it->second;
 
-			if (!sound.can_be_send_later)
+			if (!sound.can_be_sent_later)
 				continue;
 
-			if (!sound.spec.loop && (sound.keep_time < m_playing_sounds_time)) {
-				sound.can_be_send_later = false;
+			if (!sound.spec.loop && sound.keep_time < m_playing_sounds_time) {
+				sound.can_be_sent_later = false;
 				verbosestream << "Server: Sound " << it->first
 						<< " cannot be send anymore." << std::endl;
 				continue;
 			}
 
-			// this shold be never called for sound not attached to pos or object
+			// This should never be called for non-positional sounds
 			v3f pos = sound.getPos(m_env, nullptr);
 
 			for (const auto &client_it : clients) {
@@ -957,11 +957,11 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 				if (!playersao)
 					continue;
 
-				if (sound.clients.find(client->peer_id) != sound.clients.end())
-					continue;
+				if (sound.clients.count(client->peer_id) > 0)
+					continue; // still playing
 
-				if (sound.done_clients.find(client->peer_id) != sound.clients.end())
-					continue;
+				if (sound.done_clients.count(client->peer_id) > 0)
+					continue; // done playing
 
 				if (!sound.exclude_player.empty() &&
 						sound.exclude_player == client->getName())
@@ -2186,7 +2186,7 @@ void Server::SendSound(session_t peer_id, s32 sound_id,
 		const ServerPlayingSound &params, const v3f &pos)
 {
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0, peer_id);
-	createSoundPacket(pkt, sound_id, params, pos);
+	writeSoundPacket(pkt, sound_id, params, pos);
 
 	Send(&pkt);
 }
@@ -2232,7 +2232,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	if(pos_exists != (params.type != SoundLocation::Local))
 		return -1;
 
-	params.can_be_send_later = pos_exists;
+	params.can_be_sent_later = pos_exists;
 
 	// Filter destination clients
 	std::vector<session_t> dst_clients;
@@ -2244,7 +2244,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 			return -1;
 		}
 		dst_clients.push_back(player->getPeerId());
-		params.can_be_send_later = false;
+		params.can_be_sent_later = false;
 	} else {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 
@@ -2282,10 +2282,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	if (!dst_clients.empty()) {
 		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-    createSoundPacket(pkt, id, params, pos, ephemeral);
-
+    	writeSoundPacket(pkt, id, params, pos, ephemeral);
 		const bool as_reliable = !ephemeral;
-
 		for (const session_t peer_id : dst_clients) {
 			if (!ephemeral)
 				params.clients.insert(peer_id);
@@ -2362,8 +2360,8 @@ void Server::stopAttachedSounds(session_t peer_id,
 		Send(peer_id, &pkt);
 
 		sound.clients.erase(clients_it);
-		// delete if client list empty
-		return !sound.can_be_send_later && sound.clients.empty();
+		// delete if no more clients, and sound can't be resent later
+		return !sound.can_be_sent_later && sound.clients.empty();
 	};
 
 	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
@@ -2378,7 +2376,7 @@ void Server::stopAttachedSounds(session_t peer_id,
 	}
 }
 
-void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id,
+void Server::writeSoundPacket(NetworkPacket &pkt, s32 sound_id,
 		const ServerPlayingSound &params, const v3f &pos, bool ephemeral)
 {
 	float gain = params.gain * params.spec.gain;

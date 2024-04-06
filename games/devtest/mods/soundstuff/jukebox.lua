@@ -294,7 +294,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					"[soundstuff:jukebox] Playing sound: minetest.sound_play(%s, %s, %s)",
 					string.format("{name=\"%s\", gain=%s, pitch=%s, fade=%s}",
 							sss.name, sss.gain, sss.pitch, sss.fade),
-					string.format("{gain=%s, pitch=%s, fade=%s, start_time=%s, keep_tume=%s, loop=%s, pos=%s, "
+					string.format("{gain=%s, pitch=%s, fade=%s, start_time=%s, keep_time=%s, loop=%s, pos=%s, "
 						.."object=%s, to_player=\"%s\", exclude_player=\"%s\", max_hear_distance=%s}",
 							sparam.gain, sparam.pitch, sparam.fade,
 							sparam.start_time, sparam.keep_time,
