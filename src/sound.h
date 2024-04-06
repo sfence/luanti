@@ -70,9 +70,8 @@ struct SoundSpec
 	float gain = 1.0f;
 	float fade = 0.0f;
 	float pitch = 1.0f;
-	float start_time = 0.0f;
-	// keep time defines a time windows, where sound cannot be removed
-	// takes no effect for looped sounds
+	// Approximate duration to send the sound to players
+	// who come within hearing distance. Unused for looped sounds.
 	float keep_time = 0.0f;
 	bool loop = false;
 	// If true, a local fallback (ie. from the user's sound pack) is used if the

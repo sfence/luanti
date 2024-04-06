@@ -1099,10 +1099,10 @@ Table used to specify how a sound is played:
 
     -- Available since feature `sound_params_start_time`.
 
-    keep_time = 0.0,
-    -- Define time window which allow sound to be sent to players
-        whos comes into hearing distance.
-    -- This value is expected to be lees or equal to `sound_lenght - start_time`.
+	keep_time = 0.0,
+    -- Approximate playback duration (from `start_time` to end) in seconds.
+    -- This is needed to re-send sounds to new players in hearing distance.
+    -- Unused for looped sounds.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -5440,7 +5440,7 @@ Utilities
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
-      -- Sounds can be send to players which comes to hear distance.
+      -- Sounds can be sent to players who come within hearing distance.
       -- Field `keep_time` added to sound parameters. (5.9.0)
       sounds_updating = true,
   }
@@ -6624,10 +6624,8 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 Sounds
 ------
 
-* `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
-    * Returned handle is positive number if function sucessufully
-      create sound and `ephernal` if `false`.
-    * `spec` is a `SimpleSoundSpec`
+* `minetest.sound_play(spec, parameters, [ephemeral])`
+    * Returns a handle: positive number on success, `<= 0` on failure.
     * `parameters` is a sound parameter table
     * `ephemeral` is a boolean (default: false)
       Ephemeral sounds will not return a handle and can't be stopped or faded.
