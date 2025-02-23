@@ -28,10 +28,12 @@
 
 #include "CSDLManager.h"
 
+#ifdef _IRR_COMPILE_WITH_ANGLE_
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES2/gl2.h>
 #include <GLES3/gl3.h>
+#endif
 
 // Since SDL doesn't have mouse keys as keycodes we need to fall back to EKEY_CODE in some cases.
 static inline bool is_fake_key(irr::EKEY_CODE key) {
