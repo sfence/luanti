@@ -547,6 +547,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 		"-framework AVFoundation"
 		"-framework CoreAudio"
 		"-framework CoreMotion"
+		"-framework IOSurface"
 		${OPENGLES2_LIBRARY}
 		${SDL2_LIBRARIES}
 	)
