@@ -56,5 +56,6 @@ install_ios_deps() {
 	brew link "${pkgs[@]}"
 
 	wget ios${osver}_deps.tar.gz https://github.com/luanti-org/luanti_ios_deps/releases/download/latest/ios${osver}_deps.tar.gz
+	echo "Download finished sucesfully."
 	tar -xf ios${osver}_deps.tar.gz
 }
