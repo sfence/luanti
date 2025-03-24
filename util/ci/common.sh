@@ -45,7 +45,7 @@ install_ios_deps() {
 	osver=$1
 
 	local pkgs=(
-		cmake gettext
+		cmake gettext wget
 	)
 	export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
 	export HOMEBREW_NO_INSTALL_CLEANUP=1
