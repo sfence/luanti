@@ -52,7 +52,12 @@ jobs:
         run: |
           mkdir build
           cd build
-					export DEPS_DIR=${REPDIR}/ios${osver}_deps/iPhoneSimulator
+          export DEPS_DIR=${REPDIR}/ios${osver}_deps/iPhoneSimulator
           ../util/ci/build_ios.sh
 
-
+      - name: Run in iPhoneSimulator 
+        run: |
+          xcrun simctl boot "iPad Air 13-inch (M2)"
+          xcrun simctl install booted build/Release-iphonesimulator/luanti.app
+          xcrun simctl launch --console booted org.luanti.luanti --run-unittests 2>&1 log.txt
+          cat log.txt
