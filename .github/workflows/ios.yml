@@ -52,6 +52,7 @@ jobs:
         run: |
           mkdir build
           cd build
+          DEPS_DIR=${REPDIR}/ios${osver}_deps/iPhoneSimulator
           ../util/ci/build_ios.sh
 
 
