@@ -62,4 +62,4 @@ jobs:
           xcrun simctl launch --console booted org.luanti.luanti --run-unittests 2>&1 log.txt
           xcrun simctl shutdown booted
           cat log.txt
-					exit 0
+          exit 0
