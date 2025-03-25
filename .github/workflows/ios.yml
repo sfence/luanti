@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         osver: [18.2]
-        codever: [16.2]
+        xcodever: [16.2]
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4

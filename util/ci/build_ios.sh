@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+sudo xcode-select -s /Applications/Xcode_${xcodever}.app/Contents/Developer
 sdkroot="$(realpath $(xcrun --sdk iphonesimulator --show-sdk-path)/../iPhoneSimulator${osver}.sdk)"
 export CMAKE_PREFIX_PATH=${DEPS_DIR}
 export SDKROOT="$sdkroot"
