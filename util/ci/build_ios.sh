@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+sdkroot="$(realpath $(xcrun --sdk iphonesimulator --show-sdk-path)/../iPhoneSimulator${osver}.sdk)"
+export CMAKE_PREFIX_PATH=${DEPS_DIR}
+export SDKROOT="$sdkroot"
+
 cmake .. -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$osver -DCMAKE_FIND_FRAMEWORK=LAST -DCMAKE_OSX_ARCHITECTURES=arm64 \
 					-DCMAKE_INSTALL_PREFIX=../build/ios/ -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release \
 					-DCMAKE_PREFIX_PATH=${DEPS_DIR} \
@@ -39,6 +43,6 @@ cmake .. -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$osver -DCMAKE_FI
 					-DPNG_PNG_INCLUDE_DIR=${DEPS_DIR}/include \
 					-DCMAKE_EXE_LINKER_FLAGS="-lbz2 ${DEPS_DIR}/lib/libANGLE_static.a ${DEPS_DIR}/lib/libEGL_static.a" \
 					-DXCODE_CODE_SIGN_ENTITLEMENTS=${REPDIR}/misc/ios/entitlements/release.entitlements \
-					-GXcode || cat CMakeFiles/CMakeConfigureLog.yaml && ls -l ${DEPS_DIR}/lib && exit 1
+					-GXcode
 xcodebuild -project luanti.xcodeproj -scheme luanti -configuration Release build
 
