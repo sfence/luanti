@@ -710,13 +710,14 @@ bool CIrrDeviceSDL::createWindowWithContextANGLE()
 	}
 
 	EGLint egl_config_attribs[] = {
-		EGL_RED_SIZE, 8,
-		EGL_GREEN_SIZE, 8,
-		EGL_BLUE_SIZE, 8,
-		EGL_ALPHA_SIZE, 8,
-		EGL_DEPTH_SIZE, 16,
-		EGL_STENCIL_SIZE, 8,
-		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
+		EGL_RED_SIZE, (CreationParams.Bits == 16 ? 5 : 8),
+		EGL_GREEN_SIZE, (CreationParams.Bits == 16 ? 5 : 8),
+		EGL_BLUE_SIZE, (CreationParams.Bits == 16 ? 5 : 8),
+		EGL_ALPHA_SIZE, (CreationParams.WithAlphaChannel ? (CreationParams.Bits == 16 ? 1 : 8) : 0),
+		EGL_DEPTH_SIZE, CreationParams.ZBufferBits,
+		EGL_STENCIL_SIZE, CreationParams.Stencilbuffer ? 8 : 0,
+		EGL_SAMPLE_BUFFERS, CreationParams.AntiAlias > 1 ? 1 : 0,
+		EGL_SAMPLES, CreationParams.AntiAlias > 1 ? CreationParams.AntiAlias : 0,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
 		EGL_NONE
@@ -774,52 +775,6 @@ bool CIrrDeviceSDL::createWindowWithContext()
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	createWindowWithContextEmscripten();
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
-	switch (CreationParams.DriverType) {
-	case video::EDT_OPENGL:
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		break;
-	case video::EDT_OPENGL3:
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-		break;
-	case video::EDT_OGLES2:
-	case video::EDT_WEBGL1:
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-		break;
-	default:
-		_IRR_DEBUG_BREAK_IF(1);
-	}
-
-	if (CreationParams.DriverDebug) {
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
-	}
-
-	if (CreationParams.Bits == 16) {
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel ? 1 : 0);
-	} else {
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel ? 8 : 0);
-	}
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, CreationParams.Doublebuffer);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, CreationParams.Stencilbuffer ? 8 : 0);
-	SDL_GL_SetAttribute(SDL_GL_STEREO, CreationParams.Stereobuffer);
-	if (CreationParams.AntiAlias > 1) {
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
-	} else {
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-	}
 
 #ifndef _IRR_COMPILE_WITH_ANGLE_
 	createWindowWithContextSDL();
