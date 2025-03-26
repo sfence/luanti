@@ -426,7 +426,7 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 	if (Display != EGL_NO_DISPLAY) {
 		eglMakeCurrent(Display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	}
-	
+
 	if (Surface != EGL_NO_SURFACE) {
 		eglDestroySurface(Display, Surface);
 	}
@@ -658,7 +658,7 @@ bool CIrrDeviceSDL::createWindowWithContextSDL()
 		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
 		return false;
 	}
-	
+
 	Context = SDL_GL_CreateContext(Window);
 	if (!Context) {
 		os::Printer::log("Could not create context", SDL_GetError(), ELL_WARNING);
@@ -686,7 +686,7 @@ bool CIrrDeviceSDL::createWindowWithContextANGLE()
 		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
 		return false;
 	}
-	
+
 	auto metal_view = SDL_Metal_CreateView(Window);
 	auto metal_layer = SDL_Metal_GetLayer(metal_view);
 
