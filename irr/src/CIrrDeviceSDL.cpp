@@ -423,6 +423,19 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 		SDL_GL_DeleteContext(Context);
 	}
 #else
+	if (Display != EGL_NO_DISPLAY) {
+		eglMakeCurrent(Display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	}
+	
+	if (Surface != EGL_NO_SURFACE) {
+		eglDestroySurface(Display, Surface);
+	}
+	if (Context != EGL_NO_CONTEXT) {
+		eglDestroyContext(Display, Context);
+	}
+	if (Display != EGL_NO_DISPLAY) {
+		eglTerminate(Display);
+	}
 	if (View) {
 		SDL_Metal_DestroyView(View);
 	}
@@ -543,22 +556,9 @@ bool CIrrDeviceSDL::createWindow()
 	return false;
 }
 
-bool CIrrDeviceSDL::createWindowWithContext()
-{
-	u32 SDL_Flags = 0;
-	SDL_Flags |= SDL_WINDOW_ALLOW_HIGHDPI;
-
-	SDL_Flags |= getFullscreenFlag(CreationParams.Fullscreen);
-	if (Resizable)
-		SDL_Flags |= SDL_WINDOW_RESIZABLE;
-	if (CreationParams.WindowMaximized)
-		SDL_Flags |= SDL_WINDOW_MAXIMIZED;
-	SDL_Flags |= SDL_WINDOW_OPENGL;
-	//SDL_Flags |= SDL_WINDOW_METAL;
-
-	SDL_GL_ResetAttributes();
-
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
+bool CIrrDeviceSDL::createWindowWithContextEmscripten()
+{
 	if (Width != 0 || Height != 0)
 		emscripten_set_canvas_size(Width, Height);
 	else {
@@ -596,7 +596,11 @@ bool CIrrDeviceSDL::createWindowWithContext()
 	emscripten_set_mouseleave_callback("#canvas", (void *)this, false, MouseLeaveCallback);
 
 	return true;
-#else // !_IRR_EMSCRIPTEN_PLATFORM_
+}
+#else // _IRR_EMSCRIPTEN_PLATFORM_
+#ifndef _IRR_COMPILE_WITH_ANGLE_
+bool CIrrDeviceSDL::createWindowWithContextSDL()
+{
 	switch (CreationParams.DriverType) {
 	case video::EDT_OPENGL:
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -644,29 +648,17 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 	}
 
-	SDL_GL_ResetAttributes();
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-	//SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-
-#ifndef _IRR_COMPILE_WITH_ANGLE_
 	if (!SDL_GL_LoadLibrary(NULL)) {
-	os::Printer::log("Could not load OpenGL ES library", SDL_GetError(), ELL_WARNING);
-	return false;
+		os::Printer::log("Could not load OpenGL ES library", SDL_GetError(), ELL_WARNING);
+		return false;
 	}
 
 	Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
-#else
-	Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_METAL | SDL_WINDOW_ALLOW_HIGHDPI);
-#endif
 	if (!Window) {
 		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
 		return false;
 	}
-
-#ifndef _IRR_COMPILE_WITH_ANGLE_
+	
 	Context = SDL_GL_CreateContext(Window);
 	if (!Context) {
 		os::Printer::log("Could not create context", SDL_GetError(), ELL_WARNING);
@@ -685,7 +677,16 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		os::Printer::log("SDL Error", error, ELL_WARNING);
 		SDL_ClearError();
 	}
-#else
+}
+#else // _IRR_COMPILE_WITH_ANGLE_
+bool CIrrDeviceSDL::createWindowWithContextANGLE()
+{
+	Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_METAL | SDL_WINDOW_ALLOW_HIGHDPI);
+	if (!Window) {
+		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
+		return false;
+	}
+	
 	auto metal_view = SDL_Metal_CreateView(Window);
 	auto metal_layer = SDL_Metal_GetLayer(metal_view);
 
@@ -751,6 +752,79 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		os::Printer::log("Failed to make EGL context current");
 		return false;
 	}
+}
+#endif // _IRR_COMPILE_WITH_ANGLE_
+#endif // _IRR_EMSCRIPTEN_PLATFORM_
+
+bool CIrrDeviceSDL::createWindowWithContext()
+{
+	u32 SDL_Flags = 0;
+	SDL_Flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
+	SDL_Flags |= getFullscreenFlag(CreationParams.Fullscreen);
+	if (Resizable)
+		SDL_Flags |= SDL_WINDOW_RESIZABLE;
+	if (CreationParams.WindowMaximized)
+		SDL_Flags |= SDL_WINDOW_MAXIMIZED;
+	SDL_Flags |= SDL_WINDOW_OPENGL;
+	//SDL_Flags |= SDL_WINDOW_METAL;
+
+	SDL_GL_ResetAttributes();
+
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	createWindowWithContextEmscripten();
+#else // !_IRR_EMSCRIPTEN_PLATFORM_
+	switch (CreationParams.DriverType) {
+	case video::EDT_OPENGL:
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		break;
+	case video::EDT_OPENGL3:
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		break;
+	case video::EDT_OGLES2:
+	case video::EDT_WEBGL1:
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+		break;
+	default:
+		_IRR_DEBUG_BREAK_IF(1);
+	}
+
+	if (CreationParams.DriverDebug) {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
+	}
+
+	if (CreationParams.Bits == 16) {
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel ? 1 : 0);
+	} else {
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel ? 8 : 0);
+	}
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, CreationParams.Doublebuffer);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, CreationParams.Stencilbuffer ? 8 : 0);
+	SDL_GL_SetAttribute(SDL_GL_STEREO, CreationParams.Stereobuffer);
+	if (CreationParams.AntiAlias > 1) {
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
+	} else {
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+	}
+
+#ifndef _IRR_COMPILE_WITH_ANGLE_
+	createWindowWithContextSDL();
+#else
+	createWindowWithContextANGLE();
 #endif
 
 	updateSizeAndScale();

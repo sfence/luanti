@@ -301,6 +301,15 @@ private:
 	void createDriver();
 
 	bool createWindow();
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	bool createWindowWithContextEmscripten();
+#else // _IRR_EMSCRIPTEN_PLATFORM_
+#ifndef _IRR_COMPILE_WITH_ANGLE_
+	bool createWindowWithContextSDL();
+#else // _IRR_COMPILE_WITH_ANGLE_
+	bool createWindowWithContextANGLE();
+#endif // _IRR_COMPILE_WITH_ANGLE_
+#endif // _IRR_EMSCRIPTEN_PLATFORM_
 	bool createWindowWithContext();
 
 	void createKeyMap();
