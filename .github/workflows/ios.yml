@@ -57,9 +57,5 @@ jobs:
 
       - name: Run in iPhoneSimulator 
         run: |
-          xcrun simctl boot "iPad Air 13-inch (M2)"
-          xcrun simctl install booted build/build/Release-iphonesimulator/luanti.app
-          xcrun simctl launch --console booted org.luanti.luanti --run-unittests 2>&1 log.txt
-          xcrun simctl shutdown booted
+          ../util/ci/run_ios.sh "iPad Air 13-inch (M2)" 150
           cat log.txt
-          exit 0
