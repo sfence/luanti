@@ -57,5 +57,5 @@ jobs:
 
       - name: Run in iPhoneSimulator 
         run: |
-          ../util/ci/run_ios.sh "iPad Air 13-inch (M2)" 150
+          ./util/ci/run_ios.sh "iPad Air 13-inch (M2)" 150
           cat log.txt
