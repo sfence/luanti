@@ -1,50 +1,47 @@
 local S = core.get_translator("testeditor")
 local F = core.formspec_escape
 
-local function editor_to_string(editor)
-	if type(editor) == "string" then
-		return "\"" .. editor .. "\""
-	elseif type(editor) == "table" then
-		return tostring(dump(editor)):gsub("\n", "")
+local function val_to_lua_str(v)
+	if type(v) == "string" then
+		return "\"" .. v .. "\""
+	elseif type(v) == "table" then
+		return tostring(dump(v)):gsub("\n", "")
 	else
-		return tostring(editor)
+		return tostring(v)
 	end
 end
 
 local editor_formspecs = {}
 
-local function get_object_properties_form(read_data, playername)
-	if not playername then return "" end
-	local formspec = editor_formspecs[playername]
-	formspec.index_to_key = {}
-	local str = ""
+--- Updates the fields `.index_to_key` and `.list` based on `.data`
+local function update_formspec_list(formspec)
+	assert(formspec)
+
+	-- Get sorted keys of the formspec fields in `formspec.data`
 	local datalist = {}
-	for k,_ in pairs(read_data) do
+	for k,_ in pairs(formspec.data) do
 		table.insert(datalist, k)
 	end
 	table.sort(datalist)
-	for p=1, #datalist do
-		local k = datalist[p]
-		local v = read_data[k]
-		local newline = ""
-		newline = k .. " = "
-		newline = newline .. editor_to_string(v)
-		str = str .. F(newline)
-		if p < #datalist then
-			str = str .. ","
-		end
-		table.insert(formspec.index_to_key, k)
+
+	-- Build list of table values
+	local props = {}
+	for i, k in ipairs(datalist) do
+		local v = formspec.data[k]
+		props[#props + 1] = F(("%s = %s"):format(k, val_to_lua_str(v)))
 	end
-	return str
+
+	formspec.index_to_key = datalist
+	formspec.list = table.concat(props, ",")
 end
 
-local function editor_formspec(playername)
+local function show_editor_formspec(playername)
 	local formspec = editor_formspecs[playername]
 	local sel = formspec.selindex or ""
 	local key = formspec.index_to_key[sel]
 	local value = ""
-	if formspec.data[key] then
-		value = editor_to_string(formspec.data[key])
+	if formspec.data[key] ~= nil then
+		value = val_to_lua_str(formspec.data[key])
 	end
 	local title = formspec.title
 	if not formspec.actual then
@@ -56,8 +53,8 @@ local function editor_formspec(playername)
 		"textlist[0,0.5;11,6.5;editor_data;"..formspec.list..";"..sel..";false]"..
 		"field[0.2,7.75;7,1;key;"..F(S("Key"))..";"..F(formspec.key).."]"..
 		"field_close_on_enter[key;false]"..
-		"button[8,7.5;3,1;submit_key;"..F(S("Add/Change key")).."]"..
 		"field[0.2,8.75;8,1;value;"..F(S("Value"))..";"..F(value).."]"..
+		"button[8,7.5;3,1;submit_key;"..F(S("Add/Change key")).."]"..
 		"field_close_on_enter[value;false]"..
 		"button[8,8.5;3,1;submit_value;"..F(S("Submit and apply")).."]"
 	)
@@ -73,8 +70,8 @@ local function editor_formspec_create(playername, wrapper)
 		key = "",
 		actual = true,
 	}
-	editor_formspecs[playername].list = get_object_properties_form(data, playername)
-	editor_formspec(playername)
+	update_formspec_list(editor_formspecs[playername])
+	show_editor_formspec(playername)
 end
 
 -- Use loadstring to parse param as a Lua value
@@ -92,7 +89,7 @@ local function use_loadstring(param, player)
 	-- Interpret string as Lua value
 	local func, errormsg = loadstring("return (" .. param .. ")")
 	if not func then
-		return false, "Failed: " .. errormsg
+		return false, "loadstring failed: " .. errormsg
 	end
 
 	-- Apply sandbox here using setfenv
@@ -102,7 +99,7 @@ local function use_loadstring(param, player)
 	local good, errOrResult = pcall(func)
 	if not good then
 		-- A Lua error was thrown
-		return false, "Failed: " .. errOrResult
+		return false, "pcall failed: " .. errOrResult
 	end
 
 	-- errOrResult will be the value
@@ -113,58 +110,61 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not (player and player:is_player()) then
 		return
 	end
-	if formname == "testeditor:editor" then
-		local name = player:get_player_name()
-		local formspec = editor_formspecs[name]
-		if not formspec then
+	if formname ~= "testeditor:editor" then
+		return
+	end
+
+	local name = player:get_player_name()
+	local formspec = editor_formspecs[name]
+	if not formspec then
+		return
+	end
+
+	if fields.editor_data then
+		local expl = core.explode_textlist_event(fields.editor_data)
+		if expl.type == "DCL" or expl.type == "CHG" then
+			formspec.selindex = expl.index
+			formspec.key = formspec.index_to_key[expl.index]
+			show_editor_formspec(name)
 			return
 		end
-		if fields.editor_data then
-			local expl = core.explode_textlist_event(fields.editor_data)
-			if expl.type == "DCL" or expl.type == "CHG" then
-				formspec.selindex = expl.index
-				formspec.key = formspec.index_to_key[expl.index]
-				editor_formspec(name)
-				return
-			end
-		end
-		if fields.key_enter_field == "key" or fields.submit_key then
-			local success, str = use_loadstring(fields.value, player)
-			if success then
-				local key = fields.key
-				formspec.data[key] = str
-				formspec.list = get_object_properties_form(formspec.data, name)
-				formspec.actual = false
-			else
-				core.chat_send_player(name, str)
-				return
-			end
-			editor_formspec(name)
-			if fields.submit_value then
-				formspec.write_cb(name, formspec.data)
-			end
+	end
+	if fields.key_enter_field == "key" or fields.submit_key then
+		local success, str = use_loadstring(fields.value, player)
+		if success then
+			local key = fields.key
+			formspec.data[key] = str
+			update_formspec_list(formspec)
+			formspec.actual = false
+		else
+			core.chat_send_player(name, str)
 			return
 		end
-		if fields.key_enter_field == "value" or fields.submit_value then
-			local success, str = use_loadstring(fields.value, player)
-			if success then
-				local key = formspec.index_to_key[formspec.selindex]
-				formspec.data[key] = str
-				formspec.list = get_object_properties_form(formspec.data, name)
-				formspec.actual = false
-			else
-				core.chat_send_player(name, str)
-				return
-			end
-			editor_formspec(name)
-			if fields.submit_value then
-				formspec.write_cb(name, formspec.data)
-				formspec.data = formspec.read_cb(name)
-				formspec.list = get_object_properties_form(formspec.data, name)
-				formspec.actual = true
-			end
+		show_editor_formspec(name)
+		if fields.submit_value then
+			formspec.write_cb(name, formspec.data)
+		end
+		return
+	end
+	if fields.key_enter_field == "value" or fields.submit_value then
+		local success, str = use_loadstring(fields.value, player)
+		if success then
+			local key = formspec.index_to_key[formspec.selindex]
+			formspec.data[key] = str
+			update_formspec_list(formspec)
+			formspec.actual = false
+		else
+			core.chat_send_player(name, str)
 			return
 		end
+		show_editor_formspec(name)
+		if fields.submit_value then
+			formspec.write_cb(name, formspec.data)
+			formspec.data = formspec.read_cb(name)
+			update_formspec_list(formspec)
+			formspec.actual = true
+		end
+		return
 	end
 end)
 
@@ -253,12 +253,13 @@ local wrappers = {
 	}
 }
 
-local editor_params = ""
-local sep = ""
-
-for key, _ in pairs(wrappers) do
-	editor_params = editor_params..sep..key
-	sep = "|"
+local editor_params
+do
+	local params = {}
+	for key, _ in pairs(wrappers) do
+		params[#params + 1] = key
+	end
+	editor_params = table.concat(params, "|")
 end
 
 core.register_chatcommand("player_editor", {
@@ -277,4 +278,3 @@ core.register_chatcommand("player_editor", {
 		return true
 	end,
 })
-
