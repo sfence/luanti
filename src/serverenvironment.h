@@ -205,6 +205,7 @@ public:
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
+	ActiveBlockModifier *getActiveBlockModifierNoEx(const std::string &name);
 	void addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm);
 
 	/*

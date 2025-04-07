@@ -27,6 +27,8 @@ public:
 	ActiveBlockModifier() = default;
 	virtual ~ActiveBlockModifier() = default;
 
+	// Optional name of modifier.
+	virtual const std::string &getName() = 0;
 	// Set of contents to trigger on
 	virtual const std::vector<std::string> &getTriggerContents() const = 0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
@@ -45,6 +47,8 @@ public:
 	virtual s16 getMinY() = 0;
 	// get max Y for apply abm
 	virtual s16 getMaxY() = 0;
+	// Update trigger parameters
+	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y) = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,

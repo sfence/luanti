@@ -21,6 +21,7 @@ class LuaABM : public ActiveBlockModifier {
 private:
 	const int m_id;
 
+	std::string m_name;
 	std::vector<std::string> m_trigger_contents;
 	std::vector<std::string> m_required_neighbors;
 	std::vector<std::string> m_without_neighbors;
@@ -31,12 +32,14 @@ private:
 	s16 m_max_y;
 public:
 	LuaABM(int id,
+			const std::string &name,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
 			const std::vector<std::string> &without_neighbors,
 			float trigger_interval, u32 trigger_chance, bool simple_catch_up,
 			s16 min_y, s16 max_y):
 		m_id(id),
+		m_name(name),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
 		m_without_neighbors(without_neighbors),
@@ -46,6 +49,10 @@ public:
 		m_min_y(min_y),
 		m_max_y(max_y)
 	{
+	}
+	virtual const std::string &getName()
+	{
+		return m_name;
 	}
 	virtual const std::vector<std::string> &getTriggerContents() const
 	{
@@ -78,6 +85,13 @@ public:
 	virtual s16 getMaxY()
 	{
 		return m_max_y;
+	}
+	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y)
+	{
+		m_trigger_interval = interval;
+		m_trigger_chance = chance;
+		m_min_y = min_y;
+		m_max_y = max_y;
 	}
 
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
@@ -212,6 +226,9 @@ void ScriptApiEnv::readABMs()
 		int id = lua_tonumber(L, -2);
 		int current_abm = lua_gettop(L);
 
+		std::string name;
+		getstringfield(L, current_abm, "name", name);
+
 		std::vector<std::string> trigger_contents;
 		lua_getfield(L, current_abm, "nodenames");
 		read_nodenames(L, -1, trigger_contents);
@@ -246,7 +263,7 @@ void ScriptApiEnv::readABMs()
 		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
 		lua_pop(L, 1);
 
-		LuaABM *abm = new LuaABM(id, trigger_contents, required_neighbors,
+		LuaABM *abm = new LuaABM(id, name, trigger_contents, required_neighbors,
 			without_neighbors, trigger_interval, trigger_chance,
 			simple_catch_up, min_y, max_y);
 

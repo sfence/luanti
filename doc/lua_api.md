@@ -5747,6 +5747,8 @@ Utilities
       particle_blend_clip = true,
       -- The `match_meta` optional parameter is available for `InvRef:remove_item()` (5.12.0)
       remove_item_match_meta = true,
+      -- Registered and named ABM can be changed on fly (5.12.0)
+      abm_changable = true,
   }
   ```
 
@@ -9487,6 +9489,10 @@ in active mapblocks.
 
 ```lua
 {
+    name = "".
+    -- Optional name of ABM.
+    -- ABM with name can be changed at runtime (See `core.change_abm`).
+
     label = "Lava cooling",
     -- Descriptive label for profiling purposes (optional).
     -- Definitions with identical labels will be listed as one.
@@ -9508,14 +9514,20 @@ in active mapblocks.
 
     interval = 10.0,
     -- Operation interval in seconds
+    -- This value can be changed by `core.change_abm` call.
+    -- A negative interval value means that ABM is disabled.
+    -- The counter is running for disabled ABM as well. So it is recommended to use a negative value of normal interval to disable it.
+    -- If the interval is reduced to 50% or more, it can happen that ABM will be triggered in a few following server steps repeatedly.
 
     chance = 50,
     -- Probability of triggering `action` per-node per-interval is 1.0 / chance (integers only)
+    -- This value can be changed by `core.change_abm` call.
 
     min_y = -32768,
     max_y = 32767,
     -- min and max height levels where ABM will be processed (inclusive)
     -- can be used to reduce CPU usage
+    -- This value can be changed by `core.change_abm` call.
 
     catch_up = true,
     -- If true, catch-up behavior is enabled: The `chance` value is

@@ -47,8 +47,17 @@ ABMHandler::ABMHandler(std::vector<ABMWithState> &abms,
 	for (ABMWithState &abmws : abms) {
 		ActiveBlockModifier *abm = abmws.abm;
 		float trigger_interval = abm->getTriggerInterval();
-		if (trigger_interval < 0.001f)
-			trigger_interval = 0.001f;
+		// negative interval -> disabled ABM
+		if(trigger_interval < 0) {
+			if(use_timers) {
+				abmws.timer += dtime_s;
+				if (abmws.timer > -trigger_interval)
+					abmws.timer += trigger_interval;
+			}
+			continue;
+		}
+		if(trigger_interval < 0.001)
+			trigger_interval = 0.001;
 		float actual_interval = dtime_s;
 		if (use_timers) {
 			abmws.timer += dtime_s;
