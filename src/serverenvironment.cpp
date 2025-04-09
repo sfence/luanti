@@ -597,7 +597,7 @@ ActiveBlockModifier *ServerEnvironment::getActiveBlockModifierNoEx(const std::st
 {
 	if (name.empty())
 		return nullptr;
-	for (auto abm : m_abms) {
+	for (auto &&abm : m_abms) {
 		if (abm.abm->getName() == name) {
 			return abm.abm;
 		}

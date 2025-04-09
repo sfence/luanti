@@ -5748,7 +5748,7 @@ Utilities
       -- The `match_meta` optional parameter is available for `InvRef:remove_item()` (5.12.0)
       remove_item_match_meta = true,
       -- Registered and named ABM can be changed on fly (5.12.0)
-      abm_changable = true,
+      abm_changeable = true,
   }
   ```
 
@@ -5973,6 +5973,9 @@ Call these functions only at load time!
       according to its nature (e.g. `core.registered_nodes`)
 * `core.register_entity(name, entity definition)`
 * `core.register_abm(abm definition)`
+* `core.change_abm(name, new_values)`
+    * Change registered ABM
+    * Only on fields mentonied as changeable can be changed.
 * `core.register_lbm(lbm definition)`
 * `core.register_alias(alias, original_name)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
@@ -9515,13 +9518,11 @@ in active mapblocks.
     interval = 10.0,
     -- Operation interval in seconds
     -- This value can be changed by `core.change_abm` call.
-    -- A negative interval value means that ABM is disabled.
-    -- The counter is running for disabled ABM as well. So it is recommended to use a negative value of normal interval to disable it.
-    -- If the interval is reduced to 50% or more, it can happen that ABM will be triggered in a few following server steps repeatedly.
 
     chance = 50,
     -- Probability of triggering `action` per-node per-interval is 1.0 / chance (integers only)
     -- This value can be changed by `core.change_abm` call.
+    -- If chance is set to 0, ABM is disabled.
 
     min_y = -32768,
     max_y = 32767,
