@@ -930,7 +930,7 @@ void ServerEnvironment::blocksCallback(BlocksCallbackConfig &config)
 			float percent = 100.0 * (float)num_blocks_processed /
 				loadable_blocks.size();
 			actionstream << "ServerEnvironment::blocksCallback(): "
-				<< "Processed" << num_blocks_processed << " blocks ("
+				<< "Processed " << num_blocks_processed << " blocks ("
 				<< percent << "%)" << std::endl;
 		}
 		if (num_blocks_processed % unload_interval == 0) {

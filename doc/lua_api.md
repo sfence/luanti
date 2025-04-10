@@ -6640,8 +6640,8 @@ Environment access
     * Call Lua function over all loaded or loadable blocks 
     * Takes an table as an argument with the fields:
         * `mode`
-            * mode = "full": Load and go through every mapblock, clearing objects (default).
-            * mode = "quick": Clear objects immediately in loaded mapblocks, clear objects in unloaded mapblocks only when the mapblocks are next activated.
+            * mode = "full": Load and go through every mapblock.
+            * mode = "quick": Go only through loaded mapblock.
         * `callback`: Lua callback function function(name, staticdata, params.
             * `blockpos_hash`: block position hash compatible with `core.hash_node_position` and `core.get_position_from_hash`
             * `params`: Some Lua value.
