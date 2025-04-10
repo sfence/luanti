@@ -5973,7 +5973,7 @@ Call these functions only at load time!
       according to its nature (e.g. `core.registered_nodes`)
 * `core.register_entity(name, entity definition)`
 * `core.register_abm(abm definition)`
-* `core.change_abm(name, new_values)`
+* `core.override_abm(name, new_values)`
     * Change registered ABM
     * Only on fields mentonied as changeable can be changed.
 * `core.register_lbm(lbm definition)`
@@ -9494,7 +9494,7 @@ in active mapblocks.
 {
     name = "".
     -- Optional name of ABM.
-    -- ABM with name can be changed at runtime (See `core.change_abm`).
+    -- ABM with name can be changed at runtime (See `core.override_abm`).
 
     label = "Lava cooling",
     -- Descriptive label for profiling purposes (optional).
@@ -9517,18 +9517,18 @@ in active mapblocks.
 
     interval = 10.0,
     -- Operation interval in seconds
-    -- This value can be changed by `core.change_abm` call.
+    -- This value can be changed by `core.override_abm` call.
 
     chance = 50,
     -- Probability of triggering `action` per-node per-interval is 1.0 / chance (integers only)
-    -- This value can be changed by `core.change_abm` call.
+    -- This value can be changed by `core.override_abm` call.
     -- If chance is set to 0, ABM is disabled.
 
     min_y = -32768,
     max_y = 32767,
     -- min and max height levels where ABM will be processed (inclusive)
     -- can be used to reduce CPU usage
-    -- This value can be changed by `core.change_abm` call.
+    -- This value can be changed by `core.override_abm` call.
 
     catch_up = true,
     -- If true, catch-up behavior is enabled: The `chance` value is
@@ -9544,6 +9544,7 @@ in active mapblocks.
     -- mapblock plus all 26 neighboring mapblocks. If any neighboring
     -- mapblocks are unloaded an estimate is calculated for them based on
     -- loaded mapblocks.
+    -- This function can be changed by `core.override_abm` call.
 }
 ```
 

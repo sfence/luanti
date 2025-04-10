@@ -5,28 +5,28 @@ minetest.register_chatcommand("changeableABM", {
 	description = "Active/Deactivate changeable ABM.",
 	func = function(name, param)
 		if param == "enable" then
-			minetest.change_abm("testchangeableabm:abm", {
+			minetest.override_abm("testchangeableabm:abm", {
 					interval = 30.0,
 					chance = 1,
 				})
 			abm_first_run = true
 			return true, "ABM has been enabled."
 		elseif param == "interval_1" then
-			minetest.change_abm("testchangeableabm:abm", {
+			minetest.override_abm("testchangeableabm:abm", {
 					interval = 1.0,
 					chance = 1,
 				})
 			abm_first_run = true
 				return true, "ABM has been enabled with interval 1."
 		elseif param == "interval_5" then
-			minetest.change_abm("testchangeableabm:abm", {
+			minetest.override_abm("testchangeableabm:abm", {
 					interval = 5.0,
 					chance = 1,
 				})
 			abm_first_run = true
 				return true, "ABM has been enabled with interval 5."
 		elseif param == "disable" then
-			minetest.change_abm("testchangeableabm:abm", {
+			minetest.override_abm("testchangeableabm:abm", {
 					chance = 0,
 				})
 			return true, "ABM has been disabled."
