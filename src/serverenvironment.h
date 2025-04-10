@@ -252,7 +252,7 @@ public:
 	// Clear objects, loading and going through every MapBlock
 	void clearObjects(ClearObjectsMode mode);
 
-	// Call Lua functon for akk loaded or loadable MapBlock 
+	// Call Lua functon for akk loaded or loadable MapBlock
 	void blocksCallback(BlocksCallbackConfig &config);
 
 	// to be called before destructor

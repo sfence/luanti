@@ -6637,7 +6637,7 @@ Environment access
                             clear objects in unloaded mapblocks only when the
                             mapblocks are next activated.
 * `core.blocks_callback(options)`
-    * Call Lua function over all loaded or loadable blocks 
+    * Call Lua function over all loaded or loadable blocks
     * Takes an table as an argument with the fields:
         * `mode`
             * mode = "full": Load and go through every mapblock.
