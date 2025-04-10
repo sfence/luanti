@@ -1385,7 +1385,7 @@ int ModApiEnv::l_override_abm(lua_State *L)
 
 	LuaABM *abm = ScriptApiEnv::readABM(L, 2, abm_id);
 	if (abm != nullptr) {
-		env->setActiveBlockModifier(reinterpret_cast<ActiveBlockModifier *>(abm));
+		env->replaceActiveBlockModifier(reinterpret_cast<ActiveBlockModifier *>(abm));
 	}
 
 	return 0;

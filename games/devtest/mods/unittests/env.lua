@@ -12,7 +12,7 @@ core.register_abm({
 	chance = 0,
 	min_y = -10,
 	max_y = 20,
-	action = abm_action1 
+	action = abm_action1
 })
 
 local abm_index = #core.registered_abms

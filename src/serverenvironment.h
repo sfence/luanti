@@ -205,7 +205,7 @@ public:
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
-	bool setActiveBlockModifier(ActiveBlockModifier *abm);
+	bool replaceActiveBlockModifier(ActiveBlockModifier *abm);
 	void addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm);
 
 	/*

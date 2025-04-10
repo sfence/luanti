@@ -593,7 +593,7 @@ void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 	m_abms.emplace_back(abm);
 }
 
-bool ServerEnvironment::setActiveBlockModifier(ActiveBlockModifier *abm)
+bool ServerEnvironment::replaceActiveBlockModifier(ActiveBlockModifier *abm)
 {
 	std::string name(abm->getName());
 	for (auto &&m_abm : m_abms) {
