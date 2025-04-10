@@ -1381,20 +1381,12 @@ int ModApiEnv::l_override_abm(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	std::string abm_name = readParam<std::string>(L, 1);
+	int abm_id = lua_tonumber(L, 1);
 
-	ActiveBlockModifier *abm = env->getActiveBlockModifierNoEx(abm_name);
-	if (!abm) {
-		throw LuaError("ABM not found.");
-		return 0;
+	LuaABM *abm = ScriptApiEnv::readABM(L, 2, abm_id);
+	if (abm != nullptr) {
+		env->setActiveBlockModifier(reinterpret_cast<ActiveBlockModifier *>(abm));
 	}
-
-	float interval = getfloatfield_default(L, 2, "interval", abm->getTriggerInterval());
-	int chance = getintfield_default(L, 2, "chance", abm->getTriggerChance());
-	int min_y = getintfield_default(L, 2, "min_y", abm->getMinY());
-	int max_y = getintfield_default(L, 2, "max_y", abm->getMaxY());
-
-	abm->change(interval, chance, min_y, max_y);
 
 	return 0;
 }

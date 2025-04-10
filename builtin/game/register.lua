@@ -103,12 +103,12 @@ function core.register_abm(spec)
 end
 
 function core.override_abm(name, redef)
-	for _,abm in pairs(core.registered_abms) do
+	for id, abm in pairs(core.registered_abms) do
 		if abm.name == name then
 			for key, value in pairs(redef) do
 				abm[key] = redef[key]
 			end
-			override_abm_raw(name, abm)
+			override_abm_raw(id, abm)
 			return
 		end
 	end

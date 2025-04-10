@@ -47,8 +47,6 @@ public:
 	virtual s16 getMinY() = 0;
 	// get max Y for apply abm
 	virtual s16 getMaxY() = 0;
-	// Update trigger parameters
-	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y) = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,

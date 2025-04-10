@@ -86,13 +86,6 @@ public:
 	{
 		return m_max_y;
 	}
-	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y)
-	{
-		m_trigger_interval = interval;
-		m_trigger_chance = chance;
-		m_min_y = min_y;
-		m_max_y = max_y;
-	}
 
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider)
@@ -206,6 +199,54 @@ bool ScriptApiEnv::read_nodenames(lua_State *L, int idx, std::vector<std::string
 	return true;
 }
 
+LuaABM *ScriptApiEnv::readABM(lua_State *L, int abm_index, int id)
+{
+	if (!lua_istable(L, abm_index)) {
+		return nullptr;
+	}
+
+	std::string name;
+	getstringfield(L, abm_index, "name", name);
+
+	std::vector<std::string> trigger_contents;
+	lua_getfield(L, abm_index, "nodenames");
+	read_nodenames(L, -1, trigger_contents);
+	lua_pop(L, 1);
+
+	std::vector<std::string> required_neighbors;
+	lua_getfield(L, abm_index, "neighbors");
+	read_nodenames(L, -1, required_neighbors);
+	lua_pop(L, 1);
+
+	std::vector<std::string> without_neighbors;
+	lua_getfield(L, abm_index, "without_neighbors");
+	read_nodenames(L, -1, without_neighbors);
+	lua_pop(L, 1);
+
+	float trigger_interval = 10.0;
+	getfloatfield(L, abm_index, "interval", trigger_interval);
+
+	int trigger_chance = 50;
+	getintfield(L, abm_index, "chance", trigger_chance);
+
+	bool simple_catch_up = true;
+	getboolfield(L, abm_index, "catch_up", simple_catch_up);
+
+	s16 min_y = INT16_MIN;
+	getintfield(L, abm_index, "min_y", min_y);
+
+	s16 max_y = INT16_MAX;
+	getintfield(L, abm_index, "max_y", max_y);
+
+	lua_getfield(L, abm_index, "action");
+	luaL_checktype(L, abm_index + 1, LUA_TFUNCTION);
+	lua_pop(L, 1);
+
+	return new LuaABM(id, name, trigger_contents, required_neighbors,
+		without_neighbors, trigger_interval, trigger_chance,
+		simple_catch_up, min_y, max_y);;
+}
+
 void ScriptApiEnv::readABMs()
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -226,48 +267,10 @@ void ScriptApiEnv::readABMs()
 		int id = lua_tonumber(L, -2);
 		int current_abm = lua_gettop(L);
 
-		std::string name;
-		getstringfield(L, current_abm, "name", name);
-
-		std::vector<std::string> trigger_contents;
-		lua_getfield(L, current_abm, "nodenames");
-		read_nodenames(L, -1, trigger_contents);
-		lua_pop(L, 1);
-
-		std::vector<std::string> required_neighbors;
-		lua_getfield(L, current_abm, "neighbors");
-		read_nodenames(L, -1, required_neighbors);
-		lua_pop(L, 1);
-
-		std::vector<std::string> without_neighbors;
-		lua_getfield(L, current_abm, "without_neighbors");
-		read_nodenames(L, -1, without_neighbors);
-		lua_pop(L, 1);
-
-		float trigger_interval = 10.0;
-		getfloatfield(L, current_abm, "interval", trigger_interval);
-
-		int trigger_chance = 50;
-		getintfield(L, current_abm, "chance", trigger_chance);
-
-		bool simple_catch_up = true;
-		getboolfield(L, current_abm, "catch_up", simple_catch_up);
-
-		s16 min_y = INT16_MIN;
-		getintfield(L, current_abm, "min_y", min_y);
-
-		s16 max_y = INT16_MAX;
-		getintfield(L, current_abm, "max_y", max_y);
-
-		lua_getfield(L, current_abm, "action");
-		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
-		lua_pop(L, 1);
-
-		LuaABM *abm = new LuaABM(id, name, trigger_contents, required_neighbors,
-			without_neighbors, trigger_interval, trigger_chance,
-			simple_catch_up, min_y, max_y);
-
-		env->addActiveBlockModifier(abm);
+		LuaABM *abm = readABM(L, current_abm, id);
+		if (abm != nullptr) {
+			env->addActiveBlockModifier(abm);
+		}
 
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
