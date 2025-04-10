@@ -105,8 +105,10 @@ end
 function core.override_abm(name, redef)
 	for _,abm in pairs(core.registered_abms) do
 		if abm.name == name then
-			abm.action = redef.action or abm.action
-			override_abm_raw(name, redef)
+			for key, value in pairs(redef) do
+				abm[key] = redef[key]
+			end
+			override_abm_raw(name, abm)
 			return
 		end
 	end
