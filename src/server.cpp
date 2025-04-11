@@ -2351,7 +2351,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	if (!dst_clients.empty()) {
 		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-    createSoundPacket(pkt, id, params, pos, ephemeral);
+		createSoundPacket(pkt, id, params, pos, ephemeral);
 
 		const bool as_reliable = !ephemeral;
 
