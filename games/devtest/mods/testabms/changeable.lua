@@ -40,8 +40,7 @@ minetest.register_abm({
 	name = "testchangeableabm:abm",
 	nodenames = "basenodes:stone",
 	interval = 30.0,
-	chance = 0,
-	cancelable = false,
+	chance = 0, -- as default, ABM is disabled
 	action = function(pos)
 		if abm_first_run then
 			minetest.chat_send_all("Changeable ABM runs first time after enable.")
