@@ -366,14 +366,14 @@ endif()
 if(ENABLE_OPENGL3)
 	set(IRRDRVROBJ
 		${IRRDRVROBJ}
-		OpenGL3/Driver.cpp
+		OpenGL3/DriverGL3.cpp
 	)
 endif()
 
 if(ENABLE_GLES2)
 	set(IRRDRVROBJ
 		${IRRDRVROBJ}
-		OpenGLES2/Driver.cpp
+		OpenGLES2/DriverGLES2.cpp
 	)
 endif()
 
