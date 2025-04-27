@@ -4,7 +4,6 @@ cmake .. \
 	-DCMAKE_FIND_FRAMEWORK=LAST \
 	-DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
 	-DUSE_SDL2_STATIC=TRUE \
-	-DSDL2_LIBRARIES="/opt/homebrew/lib/libSDL2.a;/opt/homebrew/lib/libSDL2main.a" \
 	-DSDL2_INCLUDE_DIRS=/opt/homebrew/include/SDL2 \
 	-DFREETYPE_LIBRARY=/opt/homebrew/lib/libfreetype.a \
 	-DGETTEXT_INCLUDE_DIR=/opt/homebrew/include \
