@@ -209,6 +209,6 @@ unittests.register("test_player_hotbar_clamp", run_player_hotbar_clamp_tests, {p
 -- Player get GUID
 --
 local function test_player_guid_tests(player)
-	assert(player:get_guid()==player:get_player_name())
+	assert(player:get_guid() == player:get_player_name())
 end
 unittests.register("test_player_guid", test_player_guid_tests, {player=true})

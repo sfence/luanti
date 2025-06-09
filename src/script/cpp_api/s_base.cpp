@@ -444,7 +444,9 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 	objectstable = lua_gettop(L);
 
 	// objects_by_guid[guid] = object
-	lua_pushstring(L, cobj->getGUID().c_str());
+	auto guid = cobj->getGUID();
+	assert(!guid.empty());
+	lua_pushstring(L, guid.c_str());
 	lua_pushvalue(L, object);
 	lua_settable(L, objectstable);
 }

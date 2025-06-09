@@ -7849,12 +7849,12 @@ Global tables
     * Values in this table may be modified directly.
       Note: changes to initial properties will only affect entities spawned afterwards,
       as they are only read when spawning.
-* `core.object_refs`
-    * Map of active object references, indexed by active object id
-    * Obsolete: Use `core.objects_by_guid` instead.
-      GUIDs are strictly more useful than active object IDs.
 * `core.objects_by_guid`
     * Map of active object references, indexed by object GUID
+* `core.object_refs`
+    * **Obsolete:** Use `core.objects_by_guid` instead.
+      GUIDs are strictly more useful than active object IDs.
+    * Map of active object references, indexed by active object id
 * `core.luaentities`
     * Map of Lua entities, indexed by active object id
 * `core.registered_abms`
@@ -8555,10 +8555,10 @@ child will follow movement and rotation of that bone.
 * `get_guid()`: returns a global unique identifier (a string)
     * For players, this is a player name.
     * For Lua entities, this is a uniquely generated string, guaranteed not to collide with player names.
-      * Example: `@bGh3p2AbRE29Mb4biqX6OA`
+      * example: `@bGh3p2AbRE29Mb4biqX6OA`
     * GUIDs only use printable ASCII characters.
-    * GUIDs are persisted internally between object reloads; their format is guaranteed not to change.
-      Thus you can store GUIDs to identify objects persistently.
+    * GUIDs persist internally between object reloads; their format is guaranteed not to change.
+      Thus you can use the GUID to identify an object in a particular world online nad offline.
 
 
 #### Lua entity only (no-op for other objects)

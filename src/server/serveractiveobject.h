@@ -141,8 +141,8 @@ public:
 	virtual u16 getHP() const
 	{ return 0; }
 
-	/// Always returns the same unique string for the same object.
-	/// Because these strings are very short, copying them is not expensive.
+	/// @brief Returns an unique ID for this object (persistent across unload, server restarts).
+	/// @note Because these strings are very short, copying them is not expensive.
 	virtual std::string getGUID() = 0;
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
