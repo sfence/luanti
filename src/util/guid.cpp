@@ -16,7 +16,7 @@ std::string MyGUID::base64() const
 	return base64_encode(std::string_view(&bytes[0], bytes.size()));
 }
 
-void MyGUID::serialize(std::ostringstream &os) const
+void MyGUID::serialize(std::ostream &os) const
 {
 	os.write(&bytes[0], bytes.size());
 }

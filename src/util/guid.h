@@ -17,15 +17,17 @@ class ServerEnvironment;
  * It is global because it stays valid forever.
  * It is unique because there are no collisions.
  */
-struct MyGUID {
+struct MyGUID
+{
 	std::array<char, 16> bytes;
 
 	std::string base64() const;
-	void serialize(std::ostringstream &os) const;
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
 
-class GUIDGenerator {
+class GUIDGenerator
+{
 	DISABLE_CLASS_COPY(GUIDGenerator)
 
 public:
