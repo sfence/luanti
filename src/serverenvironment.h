@@ -10,7 +10,7 @@
 #include "activeobject.h"
 #include "environment.h"
 #include "servermap.h"
-#include "guid.h"
+#include "util/guid.h"
 #include "map.h"
 #include "settings.h"
 #include "server/activeobjectmgr.h"

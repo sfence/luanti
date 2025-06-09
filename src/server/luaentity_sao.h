@@ -6,7 +6,7 @@
 #pragma once
 
 #include "unit_sao.h"
-#include "guid.h"
+#include "util/guid.h"
 
 class LuaEntitySAO : public UnitSAO
 {

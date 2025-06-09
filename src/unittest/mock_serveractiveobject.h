@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2022 Minetest core developers & community
 
-#include "guid.h"
+#include "util/guid.h"
 #include "serverenvironment.h"
 #include <server/serveractiveobject.h>
 #include <string>
