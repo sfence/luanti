@@ -1388,14 +1388,8 @@ int ModApiEnv::l_override_abm(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	int abm_id = lua_tonumber(L, 1);
-
-	LuaABM *abm = ScriptApiEnv::readABM(L, 2, abm_id);
-	if (abm != nullptr) {
-		env->replaceActiveBlockModifier(abm);
-	}
-
-	return 0;
+	// redirect to s_env.cpp to avoid need of public LuaABM definiton or reinterpret_cast
+	return ScriptApiEnv::override_abm(L, env);
 }
 
 void ModApiEnv::Initialize(lua_State *L, int top)
