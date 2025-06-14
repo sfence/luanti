@@ -9061,7 +9061,7 @@ child will follow movement and rotation of that bone.
           * can be used for creation color blind effect, base for night vision effect etc.
 
         ```lua
-	        -- example of night vision like transform
+          -- example of night vision like transform
           { {0.0, 0.0, 0.0},
             {1.0, 9.0, 1.0},
             {0.0, 0.0, 0.0}}
