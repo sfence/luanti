@@ -108,7 +108,7 @@ vec3 screen_space_dither(highp vec2 frag_coord) {
 vec4 applyColorVision(vec4 color)
 {
 	vec3 transformedColor = colorTransformMatrix * color.rgb;
-    return vec4(transformedColor, color.a);
+	return vec4(transformedColor, color.a);
 }
 
 void main(void)

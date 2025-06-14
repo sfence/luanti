@@ -9053,12 +9053,13 @@ child will follow movement and rotation of that bone.
       * `vision_effects`: is a table that controls vision effects
         * `color_transform_matrix`: is a matrix with default value (identity matrix):
         ```lua
-          { {1.0, 0.0, 0.0},
-            {0.0, 1.0, 0.0},
-            {0.0, 0.0, 1.0}}
+          { {1.0, 0.0, 0.0}, -- r
+            {0.0, 1.0, 0.0}, -- g
+            {0.0, 0.0, 1.0}} -- b
         ```
 
-          * can be used for creation color blind effect, base for night vision effect etc.
+          * Work as `transformed_color_RGB = color_transform_matrix * color_RGB`
+          * Can be used for creation color blind effect, base for night vision effect etc.
 
         ```lua
           -- example of night vision like transform
