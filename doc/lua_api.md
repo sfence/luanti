@@ -9052,18 +9052,20 @@ child will follow movement and rotation of that bone.
               in the future, do not rely on it.
       * `vision_effects`: is a table that controls vision effects
         * `color_transform_matrix`: is a matrix with default value (identity matrix):
-```lua
-  { {1.0, 0.0, 0.0},
-    {0.0, 1.0, 0.0},
-    {0.0, 0.0, 1.0}}
-```
+        ```lua
+          { {1.0, 0.0, 0.0},
+            {0.0, 1.0, 0.0},
+            {0.0, 0.0, 1.0}}
+        ```
+
           * can be used for creation color blind effect, base for night vision effect etc.
-```lua
-	-- example of night vision like transform
-  { {0.0, 0.0, 0.0},
-    {1.0, 9.0, 1.0},
-    {0.0, 0.0, 0.0}}
-```
+
+        ```lua
+	        -- example of night vision like transform
+          { {0.0, 0.0, 0.0},
+            {1.0, 9.0, 1.0},
+            {0.0, 0.0, 0.0}}
+        ```
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
