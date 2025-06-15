@@ -5811,7 +5811,7 @@ Utilities
       -- The HTTP API supports the HEAD and PATCH methods (5.12.0)
       httpfetch_additional_methods = true,
       -- Scene color can be transformed by transform matrix (5.13.0)
-      vision_color_transform = true,
+      color_transform_matrix = true,
   }
   ```
 
