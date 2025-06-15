@@ -9050,16 +9050,16 @@ child will follow movement and rotation of that bone.
             * Currently, bloom `intensity` and `strength_factor` affect volumetric
               lighting `strength` and vice versa. This behavior is to be changed
               in the future, do not rely on it.
-      * `vision_effects`: is a table that controls vision effects
-        * `color_transform_matrix`: is a matrix with default value (identity matrix):
+      * `color_transform_matrix`: is a matrix with default value (identity matrix):
         ```lua
           { {1.0, 0.0, 0.0}, -- r
             {0.0, 1.0, 0.0}, -- g
             {0.0, 0.0, 1.0}} -- b
         ```
 
-          * Work as `transformed_color_RGB = color_transform_matrix * color_RGB`
-          * Can be used for creation color blind effect, base for night vision effect etc.
+        * Work as `transformed_color_RGB = color_transform_matrix * color_RGB`
+        * Can be used for creation color blind effect, base for night vision effect etc.
+        * Request client with protocol version 49 or higger.
 
         ```lua
           -- example of night vision like transform
