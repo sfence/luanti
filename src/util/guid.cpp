@@ -29,11 +29,8 @@ void MyGUID::deSerialize(std::istream &is)
 GUIDGenerator::GUIDGenerator() :
 	m_uniform(0, UINT64_MAX)
 {
-	if (m_rand.entropy() <= 0.01)
-		warningstream <<
-				"The system's provided random generator reports low entropy."
-				"GUID generator can be affected. Suggest a system upgrade."
-				<< std::endl;
+	std::random_device rd;
+	m_rand.seed(rd());
 }
 
 MyGUID GUIDGenerator::next()

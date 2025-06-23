@@ -42,6 +42,6 @@ public:
 
 private:
 
-	std::random_device m_rand;
+	std::mt19937_64 m_rand;
 	std::uniform_int_distribution<u64> m_uniform;
 };
