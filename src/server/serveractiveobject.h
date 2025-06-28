@@ -143,7 +143,7 @@ public:
 
 	/// @brief Returns an unique ID for this object (persistent across unload, server restarts).
 	/// @note Because these strings are very short, copying them is not expensive.
-	virtual std::string getGUID() = 0;
+	virtual std::string getGUID() const = 0;
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}

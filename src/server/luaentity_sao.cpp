@@ -431,7 +431,7 @@ u16 LuaEntitySAO::getHP() const
 	return m_hp;
 }
 
-std::string LuaEntitySAO::getGUID()
+std::string LuaEntitySAO::getGUID() const
 {
 	// The "@" ensures that entity GUIDs are easily recognizable
 	// and makes it obvious that they can't collide with player names.
