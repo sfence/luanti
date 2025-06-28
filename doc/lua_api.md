@@ -8558,7 +8558,7 @@ child will follow movement and rotation of that bone.
       * example: `@bGh3p2AbRE29Mb4biqX6OA`
     * GUIDs only use printable ASCII characters.
     * GUIDs persist internally between object reloads; their format is guaranteed not to change.
-      Thus you can use the GUID to identify an object in a particular world online nad offline.
+      Thus you can use the GUID to identify an object in a particular world online and offline.
 
 
 #### Lua entity only (no-op for other objects)
