@@ -28,10 +28,7 @@ struct MyGUID
 
 class GUIDGenerator
 {
-	DISABLE_CLASS_COPY(GUIDGenerator)
-
 public:
-
 	GUIDGenerator();
 
 	/**
@@ -39,9 +36,10 @@ public:
 	 * @return the new GUID
 	 */
 	MyGUID next();
+	
+	DISABLE_CLASS_COPY(GUIDGenerator)
 
 private:
-
 	std::mt19937_64 m_rand;
 	std::uniform_int_distribution<u64> m_uniform;
 };
