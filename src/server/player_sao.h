@@ -183,7 +183,7 @@ private:
 	std::string generateUpdatePhysicsOverrideCommand() const;
 
 	RemotePlayer *m_player = nullptr;
-	// Replace with m_player->getName method from m_player cause SIGSEG
+	// Extra variable because during shutdown m_player is unavailable, but we still need to know.
 	std::string m_player_name; ///< used as GUID
 	session_t m_peer_id_initial = 0; ///< only used to initialize RemotePlayer
 
