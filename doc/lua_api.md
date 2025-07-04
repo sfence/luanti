@@ -8557,7 +8557,7 @@ child will follow movement and rotation of that bone.
     * For Lua entities, this is a uniquely generated string, guaranteed not to collide with player names.
       * example: `@bGh3p2AbRE29Mb4biqX6OA`
     * GUIDs only use printable ASCII characters.
-    * GUIDs persist internally between object reloads; their format is guaranteed not to change.
+    * GUIDs persist between object reloads, and their format is guaranteed not to change.
       Thus you can use the GUID to identify an object in a particular world online and offline.
 
 
