@@ -481,9 +481,8 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	objectstable = lua_gettop(L);
 
 	// Set objects_by_guid[guid] = nil
-	lua_pushstring(L, cobj->getGUID().c_str());
 	lua_pushnil(L);
-	lua_settable(L, objectstable);
+	lua_setfield(L, objectstable, cobj->getGUID().c_str());
 }
 
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj)
