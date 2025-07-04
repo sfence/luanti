@@ -10,6 +10,8 @@
 #include "exceptions.h"
 #include "util/base64.h"
 #include "log.h"
+#include "porting.h"
+#include "util/numeric.h"
 
 std::string MyGUID::base64() const
 {
@@ -31,8 +33,15 @@ void MyGUID::deSerialize(std::istream &is)
 GUIDGenerator::GUIDGenerator() :
 	m_uniform(0, UINT64_MAX)
 {
-	std::random_device rd;
-	m_rand.seed(rd());
+	u64 seed;
+	if (!porting::secure_rand_fill_buf(&seed, sizeof(seed))) {
+		// main.cpp initializes our internal RNG as good as possible, so fall back to it
+		myrand_bytes(&seed, sizeof(seed));
+	}
+
+	// Make sure we're not losing entropy or providing too few
+	static_assert(sizeof(seed) == sizeof(decltype(m_rand)::result_type), "seed type mismatch");
+	m_rand.seed(seed);
 }
 
 MyGUID GUIDGenerator::next()

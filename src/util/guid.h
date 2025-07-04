@@ -36,7 +36,7 @@ public:
 	 * @return the new GUID
 	 */
 	MyGUID next();
-	
+
 	DISABLE_CLASS_COPY(GUIDGenerator)
 
 private:
