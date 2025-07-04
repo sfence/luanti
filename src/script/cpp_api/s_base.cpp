@@ -408,7 +408,7 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
  * When an active object is created, an ObjectRef is created on the Lua side
  * and stored in core.object_refs[id] and in core.objects_by_guids[GUID].
  * Methods that require an ObjectRef to a certain object retrieve it from that
- * table instead of creating their own.(*)
+ * table instead of creating their own.
  * When an active object is removed, the existing ObjectRef is invalidated
  * using ::set_null() and removed from the core.object_refs and
  * core.object_by_guids tables.
