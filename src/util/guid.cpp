@@ -24,6 +24,8 @@ void MyGUID::serialize(std::ostream &os) const
 void MyGUID::deSerialize(std::istream &is)
 {
 	is.read(&bytes[0], bytes.size());
+	if (is.eof())
+	    throw SerializationError("GUID data truncated");
 }
 
 GUIDGenerator::GUIDGenerator() :
