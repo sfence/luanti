@@ -412,10 +412,6 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
  * When an active object is removed, the existing ObjectRef is invalidated
  * using ::set_null() and removed from the core.object_refs and
  * core.object_by_guids tables.
- * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
- *     for objects without ID.
- *     It's unclear what the latter are needed for and their use is problematic
- *     since we lose control over the ref and the contained pointer.
  */
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 {
