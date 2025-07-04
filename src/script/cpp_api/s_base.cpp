@@ -459,6 +459,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	// Get core.object_refs table
 	lua_getglobal(L, "core");
 	int core = lua_gettop(L);
+
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
