@@ -54,6 +54,9 @@ install_macos_deps() {
 install_ios_deps() {
 	osver=$1
 
+	# Uninstall the bundled cmake, it is outdated, and brew does not want to install the newest version with this one present since they are from different taps.
+	brew uninstall cmake || :
+
 	local pkgs=(
 		cmake gettext wget
 	)
