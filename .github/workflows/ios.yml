@@ -31,8 +31,8 @@ jobs:
   build-ios:
     strategy:
       matrix:
-        osver: [18.2]
-        xcodever: [16.2]
+        osver: [18.4]
+        xcodever: [16.5]
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
