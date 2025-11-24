@@ -76,7 +76,8 @@ jobs:
           mkdir build
           cd build
           export DEPS_DIR=/Users/Shared/macos${osver}_${arch}_deps
-          ../util/ci/build_macos_make.sh
+          export USE_XCODE=no
+          ../util/ci/build_macos.sh
 
       - name: Build and Archive with Xcode
         if: ${{matrix.xcode == 'yes'}}
@@ -84,7 +85,8 @@ jobs:
           mkdir build_xcode
           cd build_xcode
           export DEPS_DIR=/Users/Shared/macos${osver}_${arch}_deps
-          ../util/ci/build_macos_xcode.sh
+          export USE_XCODE=yes
+          ../util/ci/build_macos.sh
 
       - name: Test GNU Make build
         run: |
