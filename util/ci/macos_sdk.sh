@@ -3,8 +3,8 @@
 download_macos_archive() {
 	rm -f $1
 	wget -O $1 $2
-	checksum=$(shasum -a 256 $1)
-	if [[ "$checksum" != "$3  $1" ]]; then
+	checksum=$(shasum -a 256 $1 | cut -d " " -f 1)
+	if [[ "$checksum" != "$3" ]]; then
 		echo "Downloaded file $1 has unexpected checksum $checksum."
 		exit 1
 	fi
