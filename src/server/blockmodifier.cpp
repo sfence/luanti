@@ -55,7 +55,9 @@ ABMHandler::ABMHandler(std::vector<ABMWithState> &abms,
 			abmws.timer += dtime_s;
 			if (abmws.timer < trigger_interval)
 				continue;
-			// use modulo to prevent mutliple ABM calls when big intreval change occurs
+			// Use modulo to handle runtime interval changes gracefully,
+			// preventing multiple consecutive ABM calls or negative timer values
+			// in case of big runtime ABM interval changes
 			abmws.timer = std::fmod(abmws.timer, trigger_interval);
 			actual_interval = trigger_interval;
 		}
