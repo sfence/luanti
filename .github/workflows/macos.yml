@@ -73,7 +73,7 @@ jobs:
           echo "angle=${{matrix.angle}}" >> $GITHUB_ENV
           echo "build_type=${{matrix.build_type}}" >> $GITHUB_ENV
           
-          if [[ "$angle" == "yes" ]]; then
+          if [[ "${{matrix.angle}}" == "yes" ]]; then
             echo "angle_suffix=_angle" >> $GITHUB_ENV
           else
             echo "angle_suffix=" >> $GITHUB_ENV
