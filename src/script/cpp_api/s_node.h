@@ -38,6 +38,7 @@ public:
 	static struct EnumString es_DrawType[];
 	static struct EnumString es_ContentParamType[];
 	static struct EnumString es_ContentParamType2[];
+	static struct EnumString es_ContentParamType2_new[];
 	static struct EnumString es_LiquidType[];
 	static struct EnumString es_NodeBoxType[];
 	static struct EnumString es_TextureAlphaMode[];

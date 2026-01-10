@@ -151,6 +151,103 @@ local function preprocess_node(nodedef)
 	if nodedef.liquidtype == "flowing" then
 		nodedef.paramtype2 = "flowingliquid"
 	end
+
+	-- TODO: No use temporary name
+	if nodedef.paramtype2 == "flowingliquid" then
+		nodedef.paramtype2_new = {
+			["flowingliquid"] = {
+				bits = 3,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "facedir" then
+		nodedef.paramtype2_new = {
+			["facedir"] = {
+				bits = 5,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "wallmounted" then
+		nodedef.paramtype2_new = {
+			["wallmounted"] = {
+				bits = 3,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "leveled" then
+		nodedef.paramtype2_new = {
+			["leveled"] = {
+				bits = 7,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "degrotate" then
+		nodedef.paramtype2_new = {
+			["degrotate"] = {
+				bits = 8,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "meshoptions" then
+		nodedef.paramtype2_new = {
+			["meshoptions"] = {
+				bits = 8,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "color" then
+		nodedef.paramtype2_new = {
+			["color"] = {
+				bits = 8,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "colorfacedir" then
+		nodedef.paramtype2_new = {
+			["facedir"] = {
+				bits = 5,
+				offset = 0,
+		},{
+			["color"] = {
+				bits = 3,
+				offset = 6,
+		}}}
+	elseif nodedef.paramtype2 == "colorwallmounted" then
+		nodedef.paramtype2_new = {
+			["wallmounted"] = {
+				bits = 3,
+				offset = 0,
+		},{
+			["color"] = {
+				bits = 5,
+				offset = 3,
+		}}}
+	elseif nodedef.paramtype2 == "glasslikeliquidlevel" then
+		nodedef.paramtype2_new = {
+			["glasslikeliquidlevel"] = {
+				bits = 8,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "colordegrotate" then
+		nodedef.paramtype2_new = {
+			["degrotate"] = {
+				bits = 5,
+				offset = 0,
+		},{
+			["color"] = {
+				bits = 8,
+				offset = 5,
+		}}}
+	elseif nodedef.paramtype2 == "4dir" then
+		nodedef.paramtype2_new = {
+			["4dir"] = {
+				bits = 2,
+				offset = 0,
+		}}
+	elseif nodedef.paramtype2 == "color4dir" then
+		nodedef.paramtype2_new = {
+			["4dir"] = {
+				bits = 2,
+				offset = 0,
+		},{
+			["color"] = {
+				bits = 6,
+				offset = 2,
+		}}}
+	end
 end
 
 local function preprocess_craft(itemdef)

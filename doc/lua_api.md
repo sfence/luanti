@@ -1375,6 +1375,19 @@ The function of `param1` is determined by `paramtype` in node definition.
 The function of `param2` is determined by `paramtype2` in node definition.
 `param2` is reserved for the engine when `paramtype2 != "none"`.
 
+NEW WIP:
+* 'paramtype2_new'
+
+```lua
+  paramtype2 = {
+    ["flowingliquid"] = {
+      bits = 4,
+      offset = 0,
+    }
+  }
+```
+
+ACTUAL:
 * `paramtype2 = "flowingliquid"`
     * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
     * The liquid level and a flag of the liquid are stored in `param2`

@@ -56,6 +56,21 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{0, NULL},
 	};
 
+struct EnumString ScriptApiNode::es_ContentParamType2_new[] =
+	{
+		{CPT2N_CUSTOM, "custom"},
+		{CPT2N_COLOR, "color"},
+		{CPT2N_FLOWINGLIQUID, "flowingliquid"},
+		{CPT2N_FACEDIR, "facedir"},
+		{CPT2N_WALLMOUNTED, "wallmounted"},
+		{CPT2N_4DIR, "4dir"},
+		{CPT2N_LEVELED, "leveled"},
+		{CPT2N_DEGROTATE, "degrotate"},
+		{CPT2N_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
+		{CPT2N_MESHOPTIONS, "meshoptions"},
+		{0, NULL},
+	};
+
 struct EnumString ScriptApiNode::es_LiquidType[] =
 	{
 		{LIQUID_NONE, "none"},

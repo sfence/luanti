@@ -21,7 +21,9 @@ extern "C" {
 
 #include "irrlichttypes_bloated.h"
 #include "itemgroup.h"
+#include "nodedef.h"
 #include "util/pointabilities.h"
+#include "util/param_bits.h"
 // We do an explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud_element.h, which is not good on server only build
 #include "hud_element.h"
@@ -175,3 +177,6 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res);
 
 void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied);
+
+bool read_parambits2(lua_State *L, int index,
+		std::array<ParamBits<u8>, ContentParamType2_new_END> (&param_bits));

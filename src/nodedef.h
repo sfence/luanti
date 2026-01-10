@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <functional>
 #include <string>
 #include <iostream>
@@ -15,6 +16,7 @@
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 #include "util/pointabilities.h"
+#include "util/param_bits.h"
 
 class IItemDefManager;
 class ITextureSource;
@@ -68,6 +70,32 @@ enum ContentParamType2 : u8
 	CPT2_COLORED_4DIR,
 	// Dummy for validity check
 	ContentParamType2_END
+};
+
+enum ContentParamType2_new : u8
+{
+	// Custom used bits
+	CPT2N_CUSTOM,
+	// Index for palette
+	CPT2N_COLOR,
+	// Flowing liquid properties
+	CPT2N_FLOWINGLIQUID,
+	// Direction for chests and furnaces and such (with axis rotation)
+	CPT2N_FACEDIR,
+	// Direction for signs, torches and such
+	CPT2N_WALLMOUNTED,
+	// Simplified direction for chests and furnaces and such (4 directions)
+	CPT2N_4DIR,
+	// Block level like FLOWINGLIQUID
+	CPT2N_LEVELED,
+	// 2D rotation
+	CPT2N_DEGROTATE,
+	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
+	CPT2N_GLASSLIKE_LIQUID_LEVEL,
+	// Mesh options for plants
+	CPT2N_MESHOPTIONS,
+	// Dummy for validity check
+	ContentParamType2_new_END
 };
 
 enum LiquidType : u8
@@ -316,6 +344,8 @@ struct ContentFeatures
 	ContentParamType param_type;
 	// Type of MapNode::param2
 	ContentParamType2 param_type_2;
+	// Param bits array
+	std::array<ParamBits<u8>, ContentParamType2_new_END> param_bits_2;
 
 	// --- VISUAL PROPERTIES ---
 

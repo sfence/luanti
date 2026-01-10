@@ -878,6 +878,15 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 			warningstream << "Node " << f.name
 				<< " has unknown paramtype2 \"" << str << '"' << std::endl;
 	}
+	{
+		lua_getfield(L, index, "paramtype2_new");
+		if (!read_parambits2(L, -1, f.param_bits_2))
+		{
+			warningstream << "Node " << f.name
+			<< " has unknown paramtype2 table" << std::endl;
+		}
+		lua_pop(L, 1);
+	}
 
 	if (!f.palette_name.empty() &&
 			!(f.param_type_2 == CPT2_COLOR ||
@@ -2663,4 +2672,59 @@ void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied)
 		}
 		lua_setfield(L, -2, "unsatisfied_depends");
 	}
+}
+
+// convert param type 2 table to ParamBits array
+bool read_parambits2(lua_State *L, int index,
+		std::array<ParamBits<u8>, ContentParamType2_new_END> (&param_bits))
+{
+	// skip if not configured
+	if (lua_isnil(L, index))
+		return true;
+	if (!lua_istable(L, index)) {
+		errorstream << "Parameter parambits2 is not a table" << std::endl;
+		return false;
+	}
+	/*
+	 Convert table of tables in format
+	 {
+	   ["facedir"] = {
+	   	bits = 4,
+	   	offset = 0
+	 }, ...}
+	 to ParamBits<u8> array
+	 */
+	 for (int i = 0; i < ContentParamType2_new_END; i++) {
+		const char *fieldname = enum_to_string(ScriptApiNode::es_ContentParamType2_new, i);
+		lua_getfield(L, index, fieldname);
+		// skip if field is not defined
+		if (lua_isnil(L, -1)) {
+			lua_pop(L, 1);
+			continue;
+		}
+		if (!lua_istable(L, -1)) {
+			errorstream << "Parameter parambits2 field " << fieldname
+				<< " is not a table" << std::endl;
+			lua_pop(L, 1);
+			return false;
+		}
+		u8 bits = 0, offset = 0;
+		if (!getintfield(L, -1, "bits", bits)) {
+			errorstream << "Parameter parambits2 field " << fieldname
+				<< " missing 'bits' field" << std::endl;
+			lua_pop(L, 1);
+			lua_pop(L, 1);
+			return false;
+		}
+		if (!getintfield(L, -1, "offset", offset)) {
+			errorstream << "Parameter parambits2 field " << fieldname
+				<< " missing 'offset' field" << std::endl;
+			lua_pop(L, 1);
+			lua_pop(L, 1);
+			return false;
+		}
+		lua_pop(L, 1);
+		param_bits[i].configure(bits, offset);
+	}
+	return true;
 }
