@@ -233,13 +233,13 @@ local function preprocess_node(nodedef)
 		}}}
 	elseif nodedef.paramtype2 == "4dir" then
 		nodedef.paramtype2_new = {
-			["4dir"] = {
+			["facedir"] = {
 				bits = 2,
 				offset = 0,
 		}}
 	elseif nodedef.paramtype2 == "color4dir" then
 		nodedef.paramtype2_new = {
-			["4dir"] = {
+			["facedir"] = {
 				bits = 2,
 				offset = 0,
 		},{

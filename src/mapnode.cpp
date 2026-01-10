@@ -29,12 +29,8 @@ u8 MapNode::getFaceDir(const NodeDefManager *nodemgr,
 	bool allow_wallmounted) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	if (f.param_type_2 == CPT2_FACEDIR ||
-			f.param_type_2 == CPT2_COLORED_FACEDIR)
-		return (getParam2() & 0x1F) % 24;
-	if (f.param_type_2 == CPT2_4DIR ||
-			f.param_type_2 == CPT2_COLORED_4DIR)
-		return getParam2() & 0x03;
+	if (f.param_bits_2[CPT2N_FACEDIR].isValid())
+		return f.param_bits_2[CPT2N_FACEDIR].get(getParam2());
 	if (allow_wallmounted && (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
 		u8 wmountface = MYMIN(getParam2() & 0x07, DWM_COUNT - 1);
@@ -47,8 +43,7 @@ u8 MapNode::getWallMounted(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_WALLMOUNTED ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
-		return MYMIN(getParam2() & 0x07, DWM_COUNT - 1);
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)		return MYMIN(getParam2() & 0x07, DWM_COUNT - 1);
 	else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE ||
 			f.drawtype == NDT_PLANTLIKE ||
 			f.drawtype == NDT_PLANTLIKE_ROOTED) {

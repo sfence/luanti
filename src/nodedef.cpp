@@ -515,6 +515,12 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
 	writeU8(os, post_effect_color_shaded);
+
+	// param2 bits
+	for (u8 i = 0; i < ContentParamType2_new_END; i++) {
+		writeU8(os, param_bits_2[i].getWidth());
+		writeU8(os, param_bits_2[i].getOffset());
+	}
 }
 
 void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
@@ -645,6 +651,17 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
+
+		// param2 bits
+		for (u8 i = 0; i < ContentParamType2_new_END; i++) {
+			tmp = readU8(is);
+			if (is.eof())
+				throw SerializationError("");
+			u8 offset = readU8(is);
+			if (is.eof())
+				throw SerializationError("");
+			param_bits_2[i].configure(tmp, offset);
+		}
 	} catch (SerializationError &e) {};
 }
 
@@ -839,10 +856,7 @@ static void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &featu
 			if (nodebox.type == NODEBOX_LEVELED) {
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
-			if (features.param_type_2 == CPT2_FACEDIR ||
-					features.param_type_2 == CPT2_COLORED_FACEDIR ||
-					features.param_type_2 == CPT2_4DIR ||
-					features.param_type_2 == CPT2_COLORED_4DIR) {
+			if (features.param_bits_2[CPT2N_FACEDIR].isValid()) {
 				// Get maximal coordinate
 				f32 coords[] = {
 					fabsf(half_processed.MinEdge.X),
