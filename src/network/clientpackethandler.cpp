@@ -1617,8 +1617,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	char *bytes_M = 0;
 	size_t len_M = 0;
 	SRPUser *usr = nullptr;
-	try
-	{
+	try {
 		usr = m_auth.getAuthData(m_chosen_auth_mech);
 	} catch (AuthError &e) {
 		errorstream << "Client: Bad SRP data: " << e.what() << std::endl;

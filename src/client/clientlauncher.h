@@ -24,7 +24,7 @@ public:
 	bool run(GameStartData &start_data, const Settings &cmd_args);
 
 private:
-	void init_args(ClientGameStartData &start_data, const Settings &cmd_args);
+	void init_args(ClientGameStartData &client_start_data, const Settings &cmd_args);
 	void init_engine();
 	void init_input();
 	void init_joysticks();
@@ -33,7 +33,7 @@ private:
 	void config_guienv();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
-		ClientGameStartData &start_data, const Settings &cmd_args);
+		ClientGameStartData &client_start_data, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
 

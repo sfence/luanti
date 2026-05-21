@@ -40,7 +40,7 @@ struct CameraOrientation {
 void the_game(volatile std::sig_atomic_t *kill,
 		InputHandler *input,
 		RenderingEngine *rendering_engine,
-		ClientGameStartData &start_data,
+		ClientGameStartData &client_start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
 		bool *reconnect_requested);

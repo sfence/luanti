@@ -275,9 +275,11 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	return retval;
 }
 
-void ClientLauncher::init_args(ClientGameStartData &start_data, const Settings &cmd_args)
+void ClientLauncher::init_args(ClientGameStartData &client_start_data, const Settings &cmd_args)
 {
 	skip_main_menu = cmd_args.getFlag("go");
+
+	GameStartData &start_data = client_start_data.start_data;
 
 	start_data.address = g_settings->get("address");
 	if (cmd_args.exists("address")) {
@@ -415,7 +417,7 @@ void ClientLauncher::config_guienv()
 }
 
 bool ClientLauncher::launch_game(std::string &error_message,
-		bool reconnect_requested, ClientGameStartData &start_data,
+		bool reconnect_requested, ClientGameStartData &client_start_data,
 		const Settings &cmd_args)
 {
 	// Prepare and check the start data to launch a game
@@ -439,6 +441,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			return false;
 		}
 	}
+
+	GameStartData &start_data = client_start_data.start_data;
 
 	/*
 	 * Show the GUI menu
@@ -518,7 +522,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	if (!reconnect_requested) {
 		// This should not be call on reconnect request, because password has been erased.
-		start_data.auth.applyPassword(start_data.name, password);
+		client_start_data.auth.applyPassword(start_data.name, password);
 	}
 	// make sure that password will not stay somewhere in memory
 	password.safeClear();

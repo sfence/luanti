@@ -10,25 +10,13 @@
 // Information processed by main menu
 struct ClientGameStartData : GameParams
 {
-	ClientGameStartData(const GameStartData &start_data):
-		GameParams(start_data),
-		name(start_data.name),
-		address(start_data.address),
-		local_server(start_data.local_server),
-		allow_login_or_register(start_data.allow_login_or_register),
-		world_spec(start_data.world_spec)
+	ClientGameStartData(const GameStartData &set_start_data):
+		start_data(set_start_data)
 	{
 	}
 
-	bool isSinglePlayer() const { return address.empty() && !local_server; }
+	bool isSinglePlayer() const { return start_data.address.empty() && !start_data.local_server; }
 
-	std::string name;
+	GameStartData start_data;
 	ClientAuth auth;
-	std::string address;
-	bool local_server;
-
-	ELoginRegister allow_login_or_register = ELoginRegister::Any;
-
-	// "world_path" must be kept in sync!
-	WorldSpec world_spec;
 };
