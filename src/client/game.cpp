@@ -1012,7 +1012,7 @@ bool Game::connectToServer(ClientGameStartData &start_data,
 
 	try {
 		client = new Client(start_data.name,
-				start_data.auth,
+				std::move(start_data.auth),
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
 				m_rendering_engine,

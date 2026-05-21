@@ -125,7 +125,7 @@ static void enrich_exception(BaseException &e, const NetworkPacket &pkt, bool in
 Client::Client(
 		const std::string &playername,
 		//const std::string &password,
-		ClientAuth &auth,
+		ClientAuth auth,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -154,7 +154,7 @@ Client::Client(
 	m_allow_login_or_register(allow_login_or_register),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
-	m_auth(auth),
+	m_auth(std::move(auth)),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(std::make_unique<ClientMediaDownloader>()),
 	m_state(LC_Created),

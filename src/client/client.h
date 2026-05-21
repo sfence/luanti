@@ -115,7 +115,7 @@ public:
 	Client(
 			const std::string &playername,
 			// auth data created from password
-			ClientAuth &auth,
+			ClientAuth auth,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
