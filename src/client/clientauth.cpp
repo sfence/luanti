@@ -13,7 +13,7 @@ ClientAuth::ClientAuth() :
 {
 }
 
-ClientAuth::ClientAuth(const std::string &player_name, const std::string &password)
+ClientAuth::ClientAuth(const std::string &player_name, const SecureString &password)
 {
 	applyPassword(player_name, password);
 }
@@ -23,27 +23,7 @@ ClientAuth::~ClientAuth()
 	clear();
 }
 
-ClientAuth &ClientAuth::operator=(ClientAuth &&other)
-{
-	clear();
-
-	m_is_empty = other.m_is_empty;
-
-	m_srp_verifier = other.m_srp_verifier;
-	m_srp_salt = other.m_srp_salt;
-
-	m_legacy_auth_data = other.m_legacy_auth_data;
-	m_srp_auth_data = other.m_srp_auth_data;
-
-	other.m_legacy_auth_data = nullptr;
-	other.m_srp_auth_data = nullptr;
-
-	other.clear();
-
-	return *this;
-}
-
-void ClientAuth::applyPassword(const std::string &player_name, const std::string &password)
+void ClientAuth::applyPassword(const std::string &player_name, const SecureString &password)
 {
 	clear();
 	// AUTH_MECHANISM_FIRST_SRP
@@ -55,13 +35,13 @@ void ClientAuth::applyPassword(const std::string &player_name, const std::string
 	m_srp_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 			player_name.c_str(), player_name_u.c_str(),
 			reinterpret_cast<const unsigned char *>(password.c_str()),
-			password.length(), NULL, NULL);
+			password.length(), nullptr, nullptr);
 	// AUTH_MECHANISM_LEGACY_PASSWORD
 	std::string translated = translate_password(player_name, password);
 	m_legacy_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 			player_name.c_str(), player_name_u.c_str(),
 			reinterpret_cast<const unsigned char *>(translated.c_str()),
-			translated.length(), NULL, NULL);
+			translated.length(), nullptr, nullptr);
 }
 
 SRPUser * ClientAuth::getAuthData(AuthMechanism chosen_auth_mech) const
@@ -77,20 +57,20 @@ SRPUser * ClientAuth::getAuthData(AuthMechanism chosen_auth_mech) const
 		case AUTH_MECHANISM_FIRST_SRP:
 			return nullptr;
 		default:
-			throw AuthError("Not valid auth data request.");
+			throw AuthError("Unknown auth mechanism.");
 	}
 	if (!chosen)
-		throw AuthError("Not valid autch data found.");
+		throw AuthError("No valid auth data found.");
 	return chosen;
 }
 
 void ClientAuth::clear()
 {
-	if (m_legacy_auth_data != nullptr) {
+	if (m_legacy_auth_data) {
 		srp_user_delete(m_legacy_auth_data);
 		m_legacy_auth_data = nullptr;
 	}
-	if (m_srp_auth_data != nullptr) {
+	if (m_srp_auth_data) {
 		srp_user_delete(m_srp_auth_data);
 		m_srp_auth_data = nullptr;
 	}
@@ -100,10 +80,10 @@ void ClientAuth::clear()
 
 void ClientAuth::clearSessionData()
 {
-	if (m_legacy_auth_data != nullptr) {
+	if (m_legacy_auth_data) {
 		srp_user_clear_sessiondata(m_legacy_auth_data);
 	}
-	if (m_srp_auth_data != nullptr) {
+	if (m_srp_auth_data) {
 		srp_user_clear_sessiondata(m_srp_auth_data);
 	}
 	// This is need only for first login to server.

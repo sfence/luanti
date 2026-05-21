@@ -7,6 +7,7 @@
 #include <string>
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
+#include "util/secure_string.h"
 
 struct SRPUser;
 
@@ -14,15 +15,11 @@ class ClientAuth
 {
 public:
 	ClientAuth();
-	ClientAuth(const std::string &player_name, const std::string &password);
+	ClientAuth(const std::string &player_name, const SecureString &password);
 
 	~ClientAuth();
-	DISABLE_CLASS_COPY(ClientAuth);
 
-	ClientAuth(ClientAuth &&other) { *this = std::move(other); }
-	ClientAuth &operator=(ClientAuth &&other);
-
-	void applyPassword(const std::string &player_name, const std::string &password);
+	void applyPassword(const std::string &player_name, const SecureString &password);
 
 	bool getIsEmpty() const { return m_is_empty; }
 	const std::string &getSrpVerifier() const { return m_srp_verifier; }

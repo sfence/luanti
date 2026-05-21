@@ -97,7 +97,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
 		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
 				m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD) {
-			m_auth->clear();
+			m_auth.clear();
 		}
 	}
 
@@ -166,7 +166,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
-	*m_auth = std::move(m_new_auth);
+	m_auth = std::move(m_new_auth);
 
 	verbosestream << "Client: Received TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
 
@@ -1619,7 +1619,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	SRPUser *usr = nullptr;
 	try
 	{
-		usr = m_auth->getAuthData(m_chosen_auth_mech);
+		usr = m_auth.getAuthData(m_chosen_auth_mech);
 	} catch (AuthError &e) {
 		errorstream << "Client: Bad SRP data: " << e.what() << std::endl;
 		return;

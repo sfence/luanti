@@ -23,6 +23,7 @@
 #include "gettime.h"
 #include "util/numeric.h"
 #include "util/tracy_wrapper.h"
+#include "util/secure_string.h"
 #include <IGUISpriteBank.h>
 #include <ICameraSceneNode.h>
 #include <unordered_map>
@@ -421,7 +422,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	std::string error_message_lua = error_message;
 	error_message.clear();
 
-	std::string password;
+	SecureString password;
 
 	if (cmd_args.exists("password"))
 		password = cmd_args.get("password");
@@ -429,7 +430,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (cmd_args.exists("password-file")) {
 		std::ifstream passfile(cmd_args.get("password-file"));
 		if (passfile.good()) {
-			std::getline(passfile, password);
+			getline(passfile, password);
 		} else {
 			error_message = gettext("Provided password file "
 					"failed to open: ")
@@ -489,7 +490,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		server_description = menudata.serverdescription;
 
 		// make sure that password will not stay somewhere in memory
-		porting::secure_clear_string(menudata.password);
+		menudata.password.safeClear();
 
 		start_data.local_server = !menudata.simple_singleplayer_mode &&
 			start_data.address.empty();
@@ -502,7 +503,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		error_message = gettext("Please choose a name!");
 		errorstream << error_message << std::endl;
 		// make sure that password will not stay somewhere in memory
-		porting::secure_clear_string(password);
+		password.safeClear();
 		return false;
 	}
 
@@ -520,7 +521,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.auth.applyPassword(start_data.name, password);
 	}
 	// make sure that password will not stay somewhere in memory
-	porting::secure_clear_string(password);
+	password.safeClear();
 
 	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {
 		error_message = gettext("Player name too long.");

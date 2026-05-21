@@ -125,7 +125,7 @@ static void enrich_exception(BaseException &e, const NetworkPacket &pkt, bool in
 Client::Client(
 		const std::string &playername,
 		//const std::string &password,
-		ClientAuth *auth,
+		ClientAuth &auth,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -1188,7 +1188,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 void Client::deleteAuthData()
 {
-	m_auth->clearSessionData();
+	m_auth.clearSessionData();
 	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 }
 
@@ -1227,11 +1227,11 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 	switch (chosen_auth_mechanism) {
 		case AUTH_MECHANISM_FIRST_SRP: {
 			// send srp verifier to server
-			const std::string &verifier = m_auth->getSrpVerifier();
-			const std::string &salt = m_auth->getSrpSalt();
+			const std::string &verifier = m_auth.getSrpVerifier();
+			const std::string &salt = m_auth.getSrpSalt();
 
 			NetworkPacket resp_pkt(TOSERVER_FIRST_SRP, 0);
-			resp_pkt << salt << verifier << (u8)((m_auth->getIsEmpty()) ? 1 : 0);
+			resp_pkt << salt << verifier << (u8)((m_auth.getIsEmpty()) ? 1 : 0);
 
 			Send(&resp_pkt);
 			break;
@@ -1243,17 +1243,17 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 
 			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
 				based_on = 0;
-				auth_data = m_auth->getLegacyAuthData();
+				auth_data = m_auth.getLegacyAuthData();
 			}
 			else {
 				based_on = 1;
-				auth_data = m_auth->getSrpAuthData();
+				auth_data = m_auth.getSrpAuthData();
 			}
 
 			char *bytes_A = 0;
 			size_t len_A = 0;
 			SRP_Result res = srp_user_start_authentication(
-				auth_data, NULL, NULL, 0,
+				auth_data, nullptr, nullptr, 0,
 				reinterpret_cast<unsigned char **>(&bytes_A), &len_A);
 			FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
@@ -1406,24 +1406,24 @@ void Client::clearOutChatQueue()
 	m_out_chat_queue = std::queue<std::wstring>();
 }
 
-void Client::sendChangePassword(std::string &oldpassword,
-	std::string &newpassword)
+void Client::sendChangePassword(SecureString &oldpassword,
+	SecureString &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	if (player == NULL) {
-		porting::secure_clear_string(oldpassword);
-		porting::secure_clear_string(newpassword);
+	if (player) {
+		oldpassword.safeClear();
+		newpassword.safeClear();
 		return;
 	}
 
 	// get into sudo mode and then send new password to server
 	std::string playername = m_env.getLocalPlayer()->getName();
-	m_auth->applyPassword(playername, oldpassword);
+	m_auth.applyPassword(playername, oldpassword);
 	m_new_auth.applyPassword(playername, newpassword);
 
 	// we do not need to keep passwords in memory
-	porting::secure_clear_string(oldpassword);
-	porting::secure_clear_string(newpassword);
+	oldpassword.safeClear();
+	newpassword.safeClear();
 
 	startAuth(choseAuthMech(m_sudo_auth_methods));
 }

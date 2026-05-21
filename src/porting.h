@@ -350,10 +350,6 @@ bool open_directory(const std::string &path);
 /// Clear memory by overwriting every character (used for security)
 void secure_clear_memory(volatile void *ptr, size_t size);
 
-/// Clear string by overwriting every character (used for security)
-void secure_clear_string(std::string &text);
-void secure_clear_string(std::wstring &text);
-
 } // namespace porting
 
 #ifdef __ANDROID__

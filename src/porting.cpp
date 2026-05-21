@@ -994,7 +994,7 @@ void TriggerMemoryTrim()
 void secure_clear_memory(volatile void *ptr, size_t size)
 {
 #ifdef __STDC_LIB_EXT1__
-	memset_s(ptr, size, '0', size);
+	memset_s(ptr, size, '\0', size);
 #elif _WIN32
 	SecureZeroMemory((PVOID)ptr, size);
 #else
@@ -1004,19 +1004,6 @@ void secure_clear_memory(volatile void *ptr, size_t size)
 		ch++;
 	}
 #endif
-}
-
-/// Override every character before clearing
-void secure_clear_string(std::string &text)
-{
-	secure_clear_memory((void *)text.data(), text.size());
-	text.clear();
-}
-
-void secure_clear_string(std::wstring &text)
-{
-	secure_clear_memory((void *)text.data(), text.size() * sizeof(wchar_t));
-	text.clear();
 }
 
 } //namespace porting

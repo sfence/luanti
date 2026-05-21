@@ -819,14 +819,14 @@ void srp_user_delete(struct SRPUser *usr)
 
 void srp_user_clear_sessiondata(struct SRPUser *usr)
 {
-	if (usr) {
-		if (usr->bytes_A) free(usr->bytes_A);
-		usr->bytes_A = nullptr;
+	if (!usr) return;
 
-		memset(usr->M, 0, CSRP_MAX_HASH);
-		memset(usr->H_AMK, 0, CSRP_MAX_HASH);
-		memset(usr->session_key, 0, CSRP_MAX_HASH);
-	}
+	if (usr->bytes_A) free(usr->bytes_A);
+	usr->bytes_A = nullptr;
+
+	memset(usr->M, 0, CSRP_MAX_HASH);
+	memset(usr->H_AMK, 0, CSRP_MAX_HASH);
+	memset(usr->session_key, 0, CSRP_MAX_HASH);
 }
 
 int srp_user_is_authenticated(struct SRPUser *usr)

@@ -15,6 +15,7 @@
 #include "clientauth.h"
 #include "util/numeric.h"
 #include "util/string.h" // StringMap
+#include "util/secure_string.h"
 
 #include <map>
 #include <memory>
@@ -113,8 +114,8 @@ public:
 
 	Client(
 			const std::string &playername,
-			//const std::string &password,
-			ClientAuth *auth,
+			// auth data created from password
+			ClientAuth &auth,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -230,8 +231,8 @@ public:
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
 	void clearOutChatQueue();
-	void sendChangePassword(std::string &oldpassword,
-		std::string &newpassword);
+	void sendChangePassword(SecureString &oldpassword,
+		SecureString &newpassword);
 	void sendDamage(u16 damage);
 	void sendRespawnLegacy();
 	void sendReady();
@@ -522,7 +523,7 @@ private:
 
 	// Auth data
 	std::string m_playername;
-	ClientAuth *m_auth;
+	ClientAuth m_auth;
 	// If set, this will be sent (and cleared) upon a TOCLIENT_ACCEPT_SUDO_MODE
 	ClientAuth m_new_auth;
 	// Usable by auth mechanisms.
