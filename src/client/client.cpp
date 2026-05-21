@@ -124,7 +124,6 @@ static void enrich_exception(BaseException &e, const NetworkPacket &pkt, bool in
 
 Client::Client(
 		const std::string &playername,
-		//const std::string &password,
 		ClientAuth auth,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
@@ -1244,8 +1243,7 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
 				based_on = 0;
 				auth_data = m_auth.getLegacyAuthData();
-			}
-			else {
+			} else {
 				based_on = 1;
 				auth_data = m_auth.getSrpAuthData();
 			}
@@ -1410,7 +1408,7 @@ void Client::sendChangePassword(SecureString &oldpassword,
 	SecureString &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	if (player) {
+	if (!player) {
 		oldpassword.safeClear();
 		newpassword.safeClear();
 		return;
